@@ -1,0 +1,53 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  binaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        # version comes from the "packageManager" field in package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm test
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Build standalone binaries
+        run: |
+          bun build packages/cli/src/index.ts --compile --minify --target=bun-windows-x64 --outfile redhand-windows-x64.exe
+          bun build packages/cli/src/index.ts --compile --minify --target=bun-linux-x64 --outfile redhand-linux-x64
+          bun build packages/cli/src/index.ts --compile --minify --target=bun-darwin-arm64 --outfile redhand-macos-arm64
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            redhand-windows-x64.exe
+            redhand-linux-x64
+            redhand-macos-arm64
+          body: |
+            redhand ${{ github.ref_name }}
+
+            Standalone binaries — no Node.js required. The agent's hand inside your browser.
+
+            | File | Platform |
+            |---|---|
+            | redhand-windows-x64.exe | Windows |
+            | redhand-linux-x64 | Linux |
+            | redhand-macos-arm64 | macOS (Apple Silicon) |
+
+            Run `redhand serve` against your browser, or add the MCP server to your client.
+            See README for the 30-second setup and the BSL 1.1 license terms (free for
+            individuals doing security research and bug bounty work).

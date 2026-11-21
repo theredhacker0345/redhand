@@ -4,10 +4,15 @@ Parameters
 
 Licensor:             theredhacker0345
 Licensed Work:        redhand
-Additional Use Grant: Free for personal use, security research, bug bounty
-                      work, and non-commercial automation on systems you own
-                      or are authorized to test.
-Change Date:          2030-11-21
+Additional Use Grant: Set out in full in Section 0 below. In summary: free for
+                      individuals doing personal security research and bug
+                      bounty work (even when paid bounties), and for
+                      non-commercial use of any kind on systems you own or
+                      are authorized to test. Commercial use by any legal
+                      entity requires a paid license.
+Change Date:          2030-11-21 (four years from first publication; each new
+                      version of the Licensed Work may carry its own later
+                      Change Date in its LICENSE file)
 Change License:       Apache License, Version 2.0
 
 Terms
@@ -16,33 +21,70 @@ The Licensor hereby grants you the right to copy, modify, create derivative
 works, redistribute, and make non-commercial use of the Licensed Work, subject
 to the following terms and conditions.
 
+0. Additional Use Grant (plain language, binding)
+
+(a) Individuals. If you are a natural person, you may use the Licensed Work
+    free of charge for:
+      - personal security research and education;
+      - participation in bug bounty programs, vulnerability disclosure
+        programs, and capture-the-flag exercises — including professional
+        participation for which you receive monetary rewards;
+      - automation of your own workflows on systems you own or are
+        authorized in writing to test.
+
+(b) Legal entities. If you are a company, organization, or institution, you
+    may use the Licensed Work free of charge only for:
+      - internal security research on systems you own or are authorized in
+        writing to test;
+      - coordinated vulnerability disclosure and authorized testing that
+        you do not resell or productize.
+
+(c) Commercial use — requiring a paid license — includes, without
+    limitation:
+      - embedding or bundling the Licensed Work (or a derivative of it) in
+        any product, service, platform, or offering made available to third
+        parties, whether free or paid;
+      - providing automated testing, scanning, or browser-automation
+        capabilities as a service to third parties, regardless of whether
+        the activity could otherwise be described as security research or
+        bug bounty work;
+      - operating the Licensed Work for the benefit of clients, customers,
+        or employers as part of a paid engagement, by anyone other than a
+        natural person acting individually under (a);
+      - redistributing the Licensed Work as part of a commercial offering.
+
+    Anti-loophole clause: describing any of the activities in (c) as "bug
+    bounty work", "security research", or "authorized testing" does not
+    bring them within the free grant. The free grant follows the user and
+    the offering, not the label of the activity.
+
+(d) Contributions. Pull requests and patches you submit to the Licensor are
+    licensed to the Licensor under the same terms as this license, so the
+    project can accept and redistribute them.
+
 1. Purpose
 
-The Licensor makes the Licensed Work available to you on the condition that you
-use the Licensed Work for the purposes set out above and in accordance with the
-terms of this license. You may use the Licensed Work for any of the purposes
-set out in the Additional Use Grant and for no other purpose.
+The Licensor makes the Licensed Work available to you on the condition that
+you use the Licensed Work for the purposes set out in Section 0 above and in
+accordance with the terms of this license. You may use the Licensed Work for
+no other purpose.
 
 2. Limitations
 
 The Licensor reserves all rights not expressly granted to you in this license.
 In particular, you may not use the Licensed Work for commercial purposes
-without a separate commercial license from the Licensor. Commercial use
-includes, without limitation, use of the Licensed Work in a product or service
-offered to third parties, or use of the Licensed Work in the course of your
-business for the benefit of your customers or clients, whether or not you
-charge for such product or service.
-
-For the purposes of this license, "commercial purposes" does not include the
-uses granted under the Additional Use Grant above.
+without a separate commercial license from the Licensor. "Commercial purposes"
+means only the activities listed in Section 0(c); everything granted in
+Section 0(a) and 0(b) — including bounty payments received by an individual
+under 0(a) — is not commercial use for the purposes of this license.
 
 3. Change Date and Change License
 
-On the Change Date, or four years from the date of each individual release of
-the Licensed Work (whichever grants broader rights), the restrictions in
-Section 2 expire and the Licensed Work is made available under the Change
-License, after which you may use the Licensed Work under the terms of the
-Change License.
+On the Change Date stated above (or the Change Date stated in the LICENSE file
+of the specific version you received, if it is later), the restrictions in
+Section 2 expire and that version of the Licensed Work is made available under
+the Change License, after which you may use that version under the terms of
+the Change License.
 
 4. Notices
 

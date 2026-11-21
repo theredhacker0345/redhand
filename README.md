@@ -165,6 +165,9 @@ Built by [**theredhacker0345**](https://github.com/theredhacker0345) — securit
 
 **Business Source License 1.1 (BSL 1.1)** — in plain English:
 
-- **Free for you if you're:** using it personally, doing security research, hunting bugs on bug bounty programs, or automating non-commercial workflows on systems you own or are authorized to test. That's the Additional Use Grant — no payment, no permission needed.
-- **Commercial use** (building a product or service on redhand, using it for client work, reselling it) requires a paid license — **email arifubaid0345@gmail.com**.
-- **It converts to Apache License 2.0 four years after each release** — every version becomes fully open source under Apache 2.0 four years after it ships, so nothing is ever locked away permanently.
+- **Individuals: free, period.** Personal use, security research, bug bounty participation — **even professional participation where you earn bounties** — and automation on systems you own or are authorized to test. No payment, no permission, ever.
+- **Organizations: free for internal security research** on systems they own or are authorized to test, including coordinated vulnerability disclosure.
+- **Not free:** embedding redhand in a product or service, offering automated testing/scanning as a service to third parties, or running it for clients — **regardless of whether you label that "bug bounty work."** The free grant follows the user and the offering, not the label. Commercial use = **email arifubaid0345@gmail.com**.
+- **Converts to Apache License 2.0** — each version becomes fully open source under Apache 2.0 at its Change Date (four years after publication), so nothing is locked away permanently.
+
+The exact binding terms (including the anti-loophole clause) are in [`LICENSE`](LICENSE).
