@@ -508,6 +508,12 @@ export class BrowserSession {
     return coreSelectOption(this.cdp, this.sessionId, index, value);
   }
 
+  /** Insert trusted text at the currently focused element (CDP Input domain). */
+  async insertTextAtFocus(text: string): Promise<void> {
+    if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    await this.cdp.send("Input.insertText", { text }, { sessionId: this.sessionId });
+  }
+
   /** Evaluate JS in the page; results are scrubbed for secret-shaped values. */
   async evaluate(expression: string): Promise<unknown> {
     if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
