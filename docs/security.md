@@ -16,7 +16,7 @@ Read the attached tab's DOM, dispatch trusted input, evaluate JS, capture screen
 ## What redhand deliberately does not do
 
 - **No cloud.** Everything is local; nothing phones home.
-- **No cookie scraping.** The tool has no cookie API surface at all (Manus's operator holds a cookies permission; we deliberately do not).
+- **No cookie scraping.** The tool has no cookie API surface at all — a deliberate omission that keeps the security story simple.
 - **No fingerprint patching.** We drive the genuine browser. Anti-detect is a *behavior* layer (humanized dynamics), not an environment layer.
 - **No stealth marketing.** The honest claim: your own automation on your own accounts and authorized targets won't behave like a bot. Defeating the hardest anti-bot stacks is not a design goal and not a promise.
 

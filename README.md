@@ -1,9 +1,13 @@
 # 🔴 redhand
 
 > **The agent's hand inside your browser.**
-> Give AI agents Manus-grade browser control — over *your* real browser, with *your* sessions, *your* fingerprint, and input that behaves like a human — through MCP.
+> Give AI agents production-operator-grade browser control — over *your* real browser, with *your* sessions, *your* fingerprint, and input that behaves like a human — through MCP.
 
-**Status: under active development — v1 target.** This README is the design contract.
+![ci](https://github.com/theredhacker0345/redhand/actions/workflows/ci.yml/badge.svg)
+![release](https://img.shields.io/badge/release-v0.1.0-FF3B4E)
+![license](https://img.shields.io/badge/license-BSL_1.1--(Apache_2.0_after_2030)-8B93A5)
+
+**Status: v0.1.0 released.**
 
 **License: BSL 1.1** (free for personal use, security research, and bug bounty work — see [License](#license) for plain-English terms).
 
@@ -11,11 +15,11 @@
 
 ## What is redhand?
 
-redhand is a **local tool + MCP server** that lets AI agents (Claude, Cursor, ZCode, any MCP client — or your own scripts) operate a real browser with the same precision as Manus's internal operator:
+redhand is a **local tool + MCP server** that lets AI agents (Claude, Cursor, ZCode, any MCP client — or your own scripts) operate a real browser with production-operator precision:
 
 - **Element-index addressing, not vision.** The agent reads an indexed list of interactive elements and acts by index — no screenshot→coordinate→miss loops.
 - **Your real browser.** Not a disposable automation instance. Your profile, your cookies, your logged-in sessions, your genuine TLS/fingerprint.
-- **Raw CDP, no middlemen.** redhand speaks the Chrome DevTools Protocol directly — the same protocol Manus's operator uses through `chrome.debugger`, the same one Chrome DevTools itself uses. No Playwright/Puppeteer abstraction between us and the browser.
+- **Raw CDP, no middlemen.** redhand speaks the Chrome DevTools Protocol directly — the same protocol Chrome DevTools itself uses, delivered as a local tool with zero automation-framework abstraction between us and the browser.
 - **Humanized input.** Mouse curves with acceleration/deceleration, dwell before clicks, overshoot-and-correct, cadence typing — because automation that moves like a robot gets treated like one.
 
 The engine implements operator patterns proven in production — element-index addressing, trusted input dispatch, state-after-every-action loops — with the precision layer (element discovery, overlap pruning, live-rect targeting) built and tuned by us, in our own code.
@@ -111,7 +115,7 @@ Full receipts: [`docs/comparison.md`](docs/comparison.md).
 
 ---
 
-## Quickstart (v1 target)
+## Quickstart
 
 ```bash
 # MCP clients (Claude Desktop / Cursor / ZCode / Codex):
@@ -135,6 +139,20 @@ browser_type(3, "••••••", humanize="ghost")
 browser_click(1)            →  returns post-click state (URL changed, new elements 1-14)
 ```
 
+### For AI agents: install the operator skill
+
+Agents drive redhand best with the operating discipline loaded — the loop,
+index rules, humanize selection, error recovery, and the security lines that
+keep you out of trouble:
+
+```bash
+# Claude Code / ZCode-style skill directories:
+cp skills/redhand/SKILL.md ~/.zcode/skills/redhand/SKILL.md
+```
+
+The skill is short, opinionated, and exists for one reason: agents that follow
+it are precise and safe; agents that don't guess.
+
 ---
 
 ## Architecture & roadmap
@@ -148,8 +166,9 @@ redhand/
 │   ├── mcp/           # MCP server (stdio + streamable HTTP)
 │   └── cli/           # setup wizard, attach, serve
 ├── bridge/            # redhand-bridge companion extension (chrome.debugger → WS loopback)
-├── docs/              # architecture.md · comparison.md · security.md
-└── examples/          # snapshot-click · form-fill · bounty-recon sessions
+├── skills/redhand/    # SKILL.md — the operating manual agents load
+├── docs/              # architecture · comparison · security · benchmarks · build-order · test-plan
+└── examples/          # snapshot-click · form-fill · bounty-recon · live scout · benchmarks
 ```
 
 **v1:** everything above.
@@ -160,7 +179,7 @@ redhand/
 
 ## Security notes
 
-- The bridge extension holds only `debugger` + `nativeMessaging` — no tabs-wide content scripts, no cookies permission, no storage of page data.
+- The bridge extension holds only `debugger` + `storage` + `tabs`, and talks over a localhost WebSocket — no native messaging, no per-OS host registration, no cookies permission, no storage of page data.
 - Pairing token: the popup shows a token the local server must present — random local processes can't attach.
 - Session visibility: badge + banner while a tab is attached; `stop()` kills control instantly.
 - While attached, the controlling agent can read the attached tab's DOM — same trust level as handing the agent the page yourself. Attach deliberately.
