@@ -11,6 +11,9 @@
 
 **License: BSL 1.1** (free for personal use, security research, and bug bounty work — see [License](#license) for plain-English terms).
 
+![redhand operating a form: banner, humanized cursor, ghost typing with visible typo-correction, click ripple](docs/redhand-demo.gif)
+*Live capture — the banner, the humanized cursor mid-path, ghost typing with a typo-and-correct, all while the user watches from another tab.*
+
 ---
 
 ## What is redhand?
