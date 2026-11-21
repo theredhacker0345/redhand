@@ -82,6 +82,20 @@ Three ways to connect (all v1):
 
 **Measured, not marketed:** snapshot **69 ms** · evaluate roundtrip **6 ms** · humanized click **1.1 s** · fast click **460 ms** on a real browser. Full methodology + comparison: [`docs/benchmarks.md`](docs/benchmarks.md).
 
+---
+
+## What it's for
+
+redhand is a general-purpose browser operator — anywhere an agent needs **speed, accuracy, and a real session**. The headline use cases:
+
+- **Repetitive browser work** — the daily form, the dashboard check, the report download, the data entry you do every single day. Agent does it in seconds, zero typos, zero missed fields, while you do something else.
+- **Speed-and-accuracy-critical flows** — anything where a human is too slow or too error-prone: 40-field forms, multi-step verification flows, comparing ten tabs, extracting structured data from behind logins.
+- **Security research** — drive a logged-in session behind auth, capture the network traffic your actions fire, probe surfaces on authorized targets. The niche it was born for.
+- **Testing your own apps** — QA loops with real sessions, real state, screenshots at every step.
+- **Playing browser games** — yes, really. DOM-based games are fully operable; canvas games work through `evaluate` (reading game state) + dispatched input. Great for fun, better as the world's most entertaining test suite.
+
+The security-research angle gets special treatment in the docs because it's where redhand's combination (real sessions + humanized input + network capture) is hardest to replace — but nothing about the tool is security-specific. It's a browser operator. Point it at whatever a browser can do.
+
 ### What redhand deliberately is
 
 - ✅ Local-only. The MCP server binds localhost; the browser never leaves your machine.
@@ -109,7 +123,7 @@ Three ways to connect (all v1):
 | Humanized mouse + typing | ✅ first-class dial | ❌ | ❌ | ❌ | ❌ | 🟡 mouse only |
 | Network capture | ✅ | ✅ | ❌ | ✅ | 🟡 | ❌ |
 | Single self-contained package (tool + MCP) | ✅ | ✅ | ✅ | ✅ | ❌ own API | ❌ |
-| Built for security-research workflow | ✅ the niche | ❌ | ❌ | 🟡 scraping | ❌ | ❌ |
+| Security-research workflow as a first-class use case | ✅ | ❌ | ❌ | 🟡 scraping | ❌ | ❌ |
 
 Full receipts: [`docs/comparison.md`](docs/comparison.md).
 
