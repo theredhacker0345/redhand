@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { execFile } from "node:child_process";
 import { RedhandError } from "@redhand/core";
-import { BrowserSession, main as serveMcp } from "@redhand/mcp";
+import { BrowserSession, main as serveMcp } from "redhand-mcp";
 import { parseArgs } from "./args.js";
 
 /**

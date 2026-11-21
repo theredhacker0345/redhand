@@ -163,11 +163,13 @@ Built by [**theredhacker0345**](https://github.com/theredhacker0345) — securit
 
 ## License
 
-**Business Source License 1.1 (BSL 1.1)** — in plain English:
+**BSL 1.1 (modified)** — battle-tested against three independent adversarial reviews. In plain English:
 
-- **Individuals: free, period.** Personal use, security research, bug bounty participation — **even professional participation where you earn bounties** — and automation on systems you own or are authorized to test. No payment, no permission, ever.
-- **Organizations: free for internal security research** on systems they own or are authorized to test, including coordinated vulnerability disclosure.
-- **Not free:** embedding redhand in a product or service, offering automated testing/scanning as a service to third parties, or running it for clients — **regardless of whether you label that "bug bounty work."** The free grant follows the user and the offering, not the label. Commercial use = **email arifubaid0345@gmail.com**.
-- **Converts to Apache License 2.0** — each version becomes fully open source under Apache 2.0 at its Change Date (four years after publication), so nothing is locked away permanently.
+- **Individuals: free, period.** One person running any number of agents on any number of machines, earning unlimited bounties — free, forever, as long as every operation is performed or personally directed by you, findings go out under your own identity and accounts, and nobody else operates the tool for your benefit. The "Individual Operation" rule is stated verbatim in the license so no future reading can tax a real solo hunter.
+- **Solo client work is NOT covered** — paid pentest engagements, client testing, and employer-directed work are commercial, even when a natural person does the clicking. Attribution of use rules catch employer capture, contractor swarms, and agency laundering.
+- **Organizations: free for internal security research** on owned/authorized systems — but results can't be sold or productized, entity bounty crews (LLCs, DAOs, shared pools) don't ride the individual grant, and "internal" stops at the legal-entity boundary.
+- **Not free:** embedding/orchestrating in any offering (even via install scripts or free tiers), testing-as-a-service, paid training/certification/config-pack offerings premised on the work, reselling, attribution-washing, or license tampering. The anti-loophole clause: *the free grant follows the user and the offering, not the label of the activity.*
+- **Lawful use only + automatic termination on breach**, trademark reservation, patent grant with retaliation, AS-IS disclaimer with liability cap, Karachi/Pakistan governing law.
+- **Converts to Apache 2.0** at the Change Date (2030-11-21 for v0.1.0; each version carries its own).
 
-The exact binding terms (including the anti-loophole clause) are in [`LICENSE`](LICENSE).
+The full binding text is in [`LICENSE`](LICENSE) — including Section 0, the definitions, and the anti-tamper/termination machinery.

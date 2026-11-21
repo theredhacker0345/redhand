@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@redhand/core": "workspace:*",
-    "@redhand/mcp": "workspace:*"
+    "redhand-mcp": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

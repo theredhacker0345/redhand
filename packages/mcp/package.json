@@ -1,9 +1,36 @@
 {
-  "name": "@redhand/mcp",
+  "name": "redhand-mcp",
   "version": "0.1.0",
+  "description": "The agent's hand inside your browser - Manus-grade browser control for AI agents via raw CDP + MCP. Your real browser, your sessions, humanized input.",
+  "license": "BUSL-1.1",
+  "author": "theredhacker0345",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theredhacker0345/redhand.git"
+  },
+  "homepage": "https://github.com/theredhacker0345/redhand#readme",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "browser-automation",
+    "cdp",
+    "devtools-protocol",
+    "ai-agents",
+    "browser-control",
+    "security-research"
+  ],
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "redhand-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

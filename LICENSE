@@ -1,66 +1,222 @@
-Business Source License 1.1
+Business Source License 1.1 (modified — see Sections 0 and 7-10, which extend
+the standard text; the licensor's Section 0 Additional Use Grant is binding
+and replaces the standard Purpose language)
 
 Parameters
 
 Licensor:             theredhacker0345
-Licensed Work:        redhand
-Additional Use Grant: Set out in full in Section 0 below. In summary: free for
-                      individuals doing personal security research and bug
-                      bounty work (even when paid bounties), and for
-                      non-commercial use of any kind on systems you own or
-                      are authorized to test. Commercial use by any legal
-                      entity requires a paid license.
-Change Date:          2030-11-21 (four years from first publication; each new
-                      version of the Licensed Work may carry its own later
-                      Change Date in its LICENSE file)
+Licensed Work:        redhand (the redhand source code, binaries, documentation,
+                      configuration formats and schemas, MCP/CLI interfaces,
+                      and distributions published by the Licensor at the
+                      Licensor's official repository, in the version received)
+Additional Use Grant: Set out in full and exclusively in Section 0 below.
+                      In summary: free for natural persons acting on their own
+                      account doing personal security research and bug bounty
+                      work (even when bounties are paid), and free for legal
+                      entities solely for internal security research as defined
+                      in Section 0(b). All other use by legal entities, and all
+                      products, services, client work, testing-as-a-service,
+                      training/certification/config offerings, and reselling,
+                      requires a paid license.
+Change Date:          2030-11-21
 Change License:       Apache License, Version 2.0
 
 Terms
 
 The Licensor hereby grants you the right to copy, modify, create derivative
-works, redistribute, and make non-commercial use of the Licensed Work, subject
-to the following terms and conditions.
+works, redistribute, and make use of the Licensed Work, subject to the
+following terms and conditions.
 
-0. Additional Use Grant (plain language, binding)
+0. Additional Use Grant
 
-(a) Individuals. If you are a natural person, you may use the Licensed Work
-    free of charge for:
-      - personal security research and education;
-      - participation in bug bounty programs, vulnerability disclosure
-        programs, and capture-the-flag exercises — including professional
-        participation for which you receive monetary rewards;
-      - automation of your own workflows on systems you own or are
-        authorized in writing to test.
+    "You" means the natural person or Legal Entity exercising the rights in
+    this License. All operation of the Licensed Work by any automated agent,
+    bot, script, or AI system is attributed to the natural person or Legal
+    Entity that controls, configures, directs, or benefits from that agent
+    (the "Principal"). An agent is never the user.
 
-(b) Legal entities. If you are a company, organization, or institution, you
-    may use the Licensed Work free of charge only for:
-      - internal security research on systems you own or are authorized in
-        writing to test;
-      - coordinated vulnerability disclosure and authorized testing that
-        you do not resell or productize.
+    (a) Individuals. If you are a natural person acting on your own account
+        (see 0(g)), you may use the Licensed Work free of charge for:
 
-(c) Commercial use — requiring a paid license — includes, without
-    limitation:
-      - embedding or bundling the Licensed Work (or a derivative of it) in
-        any product, service, platform, or offering made available to third
-        parties, whether free or paid;
-      - providing automated testing, scanning, or browser-automation
-        capabilities as a service to third parties, regardless of whether
-        the activity could otherwise be described as security research or
-        bug bounty work;
-      - operating the Licensed Work for the benefit of clients, customers,
-        or employers as part of a paid engagement, by anyone other than a
-        natural person acting individually under (a);
-      - redistributing the Licensed Work as part of a commercial offering.
+        (1) personal security research and education, subject to 0(e);
 
-    Anti-loophole clause: describing any of the activities in (c) as "bug
-    bounty work", "security research", or "authorized testing" does not
-    bring them within the free grant. The free grant follows the user and
-    the offering, not the label of the activity.
+        (2) participation in bug bounty programs, vulnerability disclosure
+            programs, and capture-the-flag exercises — including
+            professional participation for which you receive monetary
+            rewards. "Bug bounty program" means a program published by the
+            target organization or hosted on an established
+            vulnerability-reward platform, under terms offered uniformly to
+            all participants or invited participants, that rewards accepted
+            vulnerability reports. It does not include any arrangement under
+            which you are contractually obligated to deliver testing
+            services or findings to a specific client for agreed
+            compensation;
 
-(d) Contributions. Pull requests and patches you submit to the Licensor are
-    licensed to the Licensor under the same terms as this license, so the
-    project can accept and redistribute them.
+        (3) automation of your own non-commercial workflows on systems you
+            own or are authorized to test under 0(f) — this bullet does not
+            extend to paid engagements for or on behalf of any client or
+            employer.
+
+        For the avoidance of doubt and notwithstanding anything to the
+        contrary: a single natural person may run any number of automated
+        agents, on any number of machines, around the clock, and may earn
+        unlimited income from participation in bug bounty programs as
+        defined in 0(a)(2), all free of charge — provided every operation of
+        the Licensed Work is performed or personally directed by that
+        person, all findings are submitted under that person's own identity
+        and accounts, and no other person operates, supervises, or maintains
+        the Licensed Work for that person's benefit.
+
+    (b) Legal entities. If you are a Legal Entity (see 0(k)), you may use the
+        Licensed Work free of charge only for:
+
+        (1) internal security research, meaning security research conducted
+            by the entity's own personnel, solely for the entity's own
+            defensive purposes, for the benefit of no third party, on
+            systems the entity owns or is authorized to test under 0(f).
+            Results may not be sold, licensed, repackaged, or incorporated
+            into any commercial product or service; "internal" does not
+            extend across separate Legal Entities, including Affiliates;
+
+        (2) coordinated vulnerability disclosure to third parties regarding
+            vulnerabilities the entity discovers, and authorized testing of
+            systems the entity owns or is authorized to test under 0(f),
+            provided that (i) the entity does not resell or productize the
+            Licensed Work or the testing, and (ii) no compensation the
+            entity receives is contingent on discovered vulnerabilities. A
+            Legal Entity's participation in bug bounty programs for reward,
+            and any client-directed testing, requires a paid license.
+
+    (c) Commercial use — meaning any use not permitted by Section 0(a) or
+        0(b) as qualified by this Section 0 — requires a paid license from
+        the Licensor. The activities below are ILLUSTRATIVE, NOT EXHAUSTIVE.
+        Commercial use includes, without limitation:
+
+        (1) embedding, bundling, linking, or orchestrating the Licensed Work
+            (or any derivative of it) in any product, service, platform, or
+            offering made available to third parties — whether free or paid,
+            and whether or not bundled, integrated with, dependent on, or
+            requiring the Licensed Work, including by install scripts,
+            package manifests, or download-on-first-run mechanisms;
+
+        (2) providing automated testing, scanning, or browser-automation
+            capabilities as a service to third parties — whether free or
+            paid;
+
+        (3) operating the Licensed Work for the benefit of clients,
+            customers, or employers as part of any engagement, paid or
+            unpaid — this applies to natural persons and Legal Entities
+            alike; the only exceptions are participation in a bug bounty
+            program as defined in 0(a)(2) and use for your own benefit as
+            described in 0(a)(3);
+
+        (4) redistributing the Licensed Work or derivatives as part of a
+            commercial offering, or redistributing the Licensed Work
+            itself, in standalone or bundled form, for a fee or other
+            consideration;
+
+        (5) charging for, or providing as part of a monetized offering, any
+            training, certification, support, hosting, installation,
+            configuration, integration, or consulting services premised on
+            the Licensed Work, regardless of who operates it;
+
+        (6) offering, selling, or monetizing — for anything of value — any
+            prompt pack, configuration, automation recipe, playbook, or
+            instruction set that is functional with, designed for, or
+            marketed by reference to the Licensed Work, whether or not the
+            Licensed Work is distributed with it. This does not restrict
+            writing and using your own prompts and configurations for your
+            own use under 0(a), or publishing free educational content about
+            the Licensed Work.
+
+    (d) Contributions. Pull requests and patches you submit to the Licensor
+        are licensed to the Licensor and its successors and affiliates under
+        a perpetual, irrevocable, worldwide, royalty-free, non-exclusive
+        copyright and patent license to use, reproduce, modify, distribute,
+        sublicense, and commercial-license the contribution as part of the
+        Licensed Work or separately, under any terms. Contributions may not
+        modify this License; only changes to the LICENSE file authored or
+        expressly approved by the Licensor are effective.
+
+    (e) Lawful use only. You may use the Licensed Work only for lawful
+        purposes in compliance with all applicable laws. The grants in this
+        Section 0 are void, and terminate immediately, as to any use
+        involving: unauthorized access to computer systems or data;
+        distribution or operation of malware, botnets, or ransomware;
+        traffic in stolen credentials or personal data; fraud, spam, or
+        circumvention of access controls beyond the scope of valid
+        authorization; or conduct prohibited by the target's terms where such
+        prohibition reflects law. Nothing in this subsection restricts
+        testing expressly authorized under 0(a)(2) or 0(f).
+
+    (f) Authorization. "Authorized to test" means holding a written
+        authorization created before the relevant activity by the owner or
+        operator of the system, or a person with actual authority to bind
+        them, covering the specific systems, assets, and testing methods
+        performed. A bug bounty program's published policy authorizes only
+        the assets, vulnerability classes, methods, rate limits, and time
+        windows it expressly states, and only while it remains in force and
+        you remain in good standing. Good-faith reliance on a published
+        program policy satisfies this subsection for the activities the
+        policy actually covers. Testing systems outside, adjacent to, or
+        merely claimed in scope; continuing after a program ends, pauses, or
+        excludes you; and authorization authored by yourself or by a person
+        without actual authority, are not authorization. The burden of
+        establishing authorization rests on the user.
+
+    (g) Attribution of use. Use of the Licensed Work by a natural person is
+        deemed use by the Legal Entity for whose benefit it is performed —
+        and is not "acting on your own account" — if any of the following
+        applies: (i) it occurs within the scope of the person's employment
+        or engagement with that entity; (ii) it is directed, controlled, or
+        requested by that entity; (iii) it is performed using that entity's
+        time, systems, accounts, credentials, or other resources; (iv) work
+        product is delivered, sold, published, or claimed by that entity; or
+        (v) any bounty, fee, salary, revenue share, commission, or other
+        remuneration for the activity is payable to, shared with, or
+        assignable to that entity. In such cases the use is governed solely
+        by 0(b) and 0(c). A natural person acts "on their own account" only
+        when none of (i)-(v) applies: bug bounty work performed in the
+        person's own time, with their own equipment, submitted under the
+        person's own identity and accounts, for bounties paid to the person
+        personally and not assigned or shared with any Legal Entity, remains
+        free under 0(a).
+
+    (h) Termination and notices. Every grant under this License terminates
+        automatically, without notice, upon any use outside Section 0 or
+        breach of any term. Upon termination you must cease all use and
+        distribution; continued use is unlicensed copyright infringement.
+        You may not remove or alter any licensing or attribution notice in
+        the Licensed Work or any derivative of it.
+
+    (i) Disclaimer and limitation of liability. THE LICENSED WORK IS
+        PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+        INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+        NON-INFRINGEMENT. IN NO EVENT SHALL THE LICENSOR BE LIABLE FOR ANY
+        CLAIM OR DAMAGES ARISING FROM OR RELATED TO THE LICENSED WORK,
+        INCLUDING USE BY YOU, YOUR AGENTS, OR ANY THIRD PARTY, EVEN IF
+        ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+    (j) Patents. The Licensor grants you a worldwide, royalty-free,
+        non-exclusive patent license for claims owned or controlled by the
+        Licensor that are necessarily infringed by the Licensed Work as made
+        available by the Licensor, limited to use permitted by this License.
+        That license terminates, as to you, if you institute patent
+        litigation alleging the Licensed Work or a contribution to it
+        infringes a patent.
+
+    (k) Defined terms. "Legal Entity" means any entity other than a natural
+        person, including companies, limited liability companies,
+        partnerships (incorporated or not), associations, cooperatives,
+        collectives, organizations, institutions, trusts, DAOs or
+        token-gated groups, government bodies, and any group of two or more
+        natural persons using the Licensed Work under a common arrangement,
+        for pooled or shared benefit, or under common control or management.
+        "Affiliates" are distinct Legal Entities; the "internal" research
+        grant in 0(b) does not extend across separate Legal Entities.
+        "Personal" in 0(a) means not performed within the scope of employment
+        or engagement for a Legal Entity, except bounty/VDP/CTF
+        participation under 0(a)(2).
 
 1. Purpose
 
@@ -72,24 +228,51 @@ no other purpose.
 2. Limitations
 
 The Licensor reserves all rights not expressly granted to you in this license.
-In particular, you may not use the Licensed Work for commercial purposes
-without a separate commercial license from the Licensor. "Commercial purposes"
-means only the activities listed in Section 0(c); everything granted in
-Section 0(a) and 0(b) — including bounty payments received by an individual
-under 0(a) — is not commercial use for the purposes of this license.
+
+"Use" means any exercise of the rights granted above, including executing,
+running, installing, loading, configuring, invoking, making available, and
+distributing the Licensed Work. Use by an automated agent or program is Use
+by the Principal defined in Section 0.
+
+The activities listed in Section 0(c) are illustrative, not exhaustive.
+Commercial use means any use not permitted by Section 0(a) or Section 0(b) as
+qualified by Section 0. For the avoidance of doubt: (i) bounty, reward, or
+prize payments received by a natural person for activities within Section
+0(a) are not commercial use; (ii) any use of the Licensed Work for the
+benefit of, on behalf of, or within the scope of a client, customer, or
+employer engagement is commercial use, except participation in bug bounty,
+vulnerability disclosure, and CTF activities described in Section 0(a)(2);
+and (iii) a Legal Entity that directs, provisions, orchestrates, or derives
+revenue from the use of the Licensed Work by other persons is making
+commercial use, whether or not it executes the Licensed Work itself.
 
 3. Change Date and Change License
 
-On the Change Date stated above (or the Change Date stated in the LICENSE file
-of the specific version you received, if it is later), the restrictions in
-Section 2 expire and that version of the Licensed Work is made available under
-the Change License, after which you may use that version under the terms of
-the Change License.
+On the Change Date stated in the Parameters above, the restrictions in
+Section 2 expire and that version of the Licensed Work is made available
+under the Change License, after which you may use that version under the
+terms of the Change License. The Change Date and Change License for a version
+are fixed by the Licensor in that version's LICENSE file as first published
+by the Licensor; no other date, statement, or representation has effect. Any
+claim that the Section 2 restrictions for a version expired before that
+version's Change Date is false and constitutes breach of this License. A
+forked or modified copy carries the Change Date of the Licensor-published
+version from which it derives.
 
-4. Notices
+4. Notices; integrity of license terms
 
-You must ensure that anyone who gets a copy of any part of the Licensed Work
-from you also gets a copy of these terms.
+Anyone who gets a copy of any part of the Licensed Work from you must also
+get: (a) a copy of these terms unmodified, including the Parameters and
+Section 0; (b) all copyright, attribution, and provenance notices contained
+in the Licensed Work; and (c) if you distribute a modified version in object
+or executable form, the complete corresponding source of that modified
+version, plus a prominent statement that you have modified the Licensed Work
+and that it is not endorsed by, or affiliated with, the Licensor. You may not
+modify the Parameters or Sections 0 through 10 of this License in any copy or
+derivative. Distribution of the Licensed Work or a derivative with altered
+Parameters or altered Sections 0 through 10, or under any representation that
+it is available under terms other than these, is a material breach and
+terminates your grant immediately as to all versions.
 
 5. Acceptance
 
@@ -99,3 +282,23 @@ If you do not accept these terms, you may not use the Licensed Work.
 6. Contact
 
 Commercial licensing inquiries: arifubaid0345@gmail.com
+
+7. Trademarks
+
+This License grants no right to use the Licensor's names, logos, or
+trademarks, including "redhand", except to state truthfully that a work is
+derived from the Licensed Work. Derivatives must use a name distinct from the
+Licensed Work and must not suggest Licensor endorsement, sponsorship,
+certification, or affiliation without prior written consent.
+
+8. Governing law
+
+This License is governed by the laws of the Islamic Republic of Pakistan,
+excluding conflict-of-laws rules; the parties submit to the exclusive
+jurisdiction of the courts of Karachi, Pakistan. It shall be interpreted to
+effect its intent: natural persons acting on their own account remain free
+under Section 0(a) (including compensated bug bounty work), Legal Entities
+remain free under Section 0(b) solely for internal security research as
+defined there, and all other commercialization requires a paid license. If
+any provision is unenforceable, it is reformed to the minimum extent
+necessary and the remainder survives.

@@ -214,7 +214,7 @@ importers:
       '@redhand/core':
         specifier: workspace:*
         version: link:../core
-      '@redhand/mcp':
+      redhand-mcp:
         specifier: workspace:*
         version: link:../mcp
     devDependencies:
