@@ -151,7 +151,82 @@ export const EXECUTOR_SOURCE = `
     return '<' + tag + id + cls + role + '>' + (text ? ' ' + text : '');
   }
 
+  var BANNER_ID = 'redhand-overlay-banner';
+  var CURSOR_ID = 'redhand-cursor-overlay';
+
+  function ensureOverlay() {
+    if (!document.body) { return; }
+    if (!document.getElementById(BANNER_ID)) {
+      var b = document.createElement('div');
+      b.id = BANNER_ID;
+      b.setAttribute('style', 'position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:2147483647;'
+        + 'background:#111827;color:#f9fafb;font:600 12px system-ui,sans-serif;padding:6px 14px;'
+        + 'border-radius:9999px;border:1px solid #ef4444;box-shadow:0 2px 10px rgba(0,0,0,.35);'
+        + 'pointer-events:none;opacity:.92');
+      b.textContent = '🔴 redhand is operating this tab';
+      document.body.appendChild(b);
+    }
+    if (!document.getElementById(CURSOR_ID)) {
+      var c = document.createElement('div');
+      c.id = CURSOR_ID;
+      c.setAttribute('style', 'position:fixed;left:0;top:0;z-index:2147483646;pointer-events:none;'
+        + 'width:22px;height:22px;transform:translate(-100px,-100px);transition:transform 60ms linear;'
+        + 'opacity:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))');
+      c.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24">'
+        + '<path d="M4 2 L20 12 L12 13.5 L15.5 21 L13 22 L9.5 14.5 L4 19 Z" '
+        + 'fill="#ef4444" stroke="#ffffff" stroke-width="1.2"/></svg>';
+      document.body.appendChild(c);
+    }
+  }
+
+  function cursorMove(x, y) {
+    ensureOverlay();
+    var c = document.getElementById(CURSOR_ID);
+    if (c) {
+      c.style.transform = 'translate(' + (x - 2) + 'px,' + (y - 2) + 'px)';
+      c.style.opacity = '1';
+    }
+  }
+
+  function cursorClick(x, y) {
+    cursorMove(x, y);
+    var r = document.createElement('div');
+    r.setAttribute('style', 'position:fixed;z-index:2147483646;pointer-events:none;'
+      + 'left:' + (x - 16) + 'px;top:' + (y - 16) + 'px;width:32px;height:32px;'
+      + 'border:2px solid #ef4444;border-radius:50%;opacity:.9;transition:all .35s ease-out');
+    document.body.appendChild(r);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        r.style.transform = 'scale(2.2)';
+        r.style.opacity = '0';
+      });
+    });
+    setTimeout(function () {
+      if (r.parentNode) { r.parentNode.removeChild(r); }
+    }, 420);
+  }
+
+  function animatePath(points) {
+    var t = 0;
+    for (var i = 0; i < points.length; i++) {
+      var p = points[i];
+      t = t + (p[2] || 0);
+      (function (x, y, at) {
+        setTimeout(function () { cursorMove(x, y); }, at);
+      })(p[0], p[1], t);
+    }
+  }
+
+  function hideOverlay() {
+    var b = document.getElementById(BANNER_ID);
+    var c = document.getElementById(CURSOR_ID);
+    if (b && b.parentNode) { b.parentNode.removeChild(b); }
+    if (c && c.parentNode) { c.parentNode.removeChild(c); }
+    return { done: true };
+  }
+
   function snapshot() {
+    ensureOverlay();
     var cands = collectCandidates();
     cands = pruneOverlap(cands);
     var filtered = [];
@@ -254,7 +329,12 @@ export const EXECUTOR_SOURCE = `
     scrollIntoView: scrollIntoView,
     selectOption: selectOption,
     clear: clear,
-    describe: describe
+    describe: describe,
+    cursorMove: cursorMove,
+    cursorClick: cursorClick,
+    animatePath: animatePath,
+    hideOverlay: hideOverlay,
+    ensureOverlay: ensureOverlay
   };
 })();
 `;

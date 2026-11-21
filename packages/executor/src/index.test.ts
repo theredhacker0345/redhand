@@ -41,6 +41,9 @@ interface ExecutorApi {
   scrollIntoView: (i: number) => { done: boolean };
   selectOption: (i: number, value: string) => { ok: boolean };
   clear: () => { done: boolean };
+  cursorMove: (x: number, y: number) => void;
+  cursorClick: (x: number, y: number) => void;
+  hideOverlay: () => { done: boolean };
 }
 
 function api(): ExecutorApi {
@@ -151,5 +154,37 @@ describe("executor", () => {
     setupWindow(`<div id="card" data-w="50" data-h="20" style="cursor:pointer">card</div><span>plain</span>`);
     const snap = api().snapshot();
     expect(snap.map((e) => e["tag"])).toEqual(["div"]);
+  });
+
+  it("installs the visibility overlay: banner + cursor", () => {
+    setupWindow(SIMPLE_PAGE);
+    api().snapshot();
+    expect(document.getElementById("redhand-overlay-banner")?.textContent).toContain("redhand is operating this tab");
+    expect(document.getElementById("redhand-cursor-overlay")).not.toBeNull();
+  });
+
+  it("cursorMove positions and reveals the cursor", () => {
+    setupWindow(SIMPLE_PAGE);
+    api().snapshot();
+    api().cursorMove(300, 200);
+    const cursor = document.getElementById("redhand-cursor-overlay") as HTMLElement;
+    expect(cursor.style.transform).toBe("translate(298px,198px)");
+    expect(cursor.style.opacity).toBe("1");
+  });
+
+  it("cursorClick spawns a ripple and cleans it up", () => {
+    setupWindow(SIMPLE_PAGE);
+    api().snapshot();
+    api().cursorClick(50, 60);
+    const ripples = document.querySelectorAll("[style*='border:2px solid #ef4444']");
+    expect(ripples.length).toBe(1);
+  });
+
+  it("hideOverlay removes banner and cursor", () => {
+    setupWindow(SIMPLE_PAGE);
+    api().snapshot();
+    api().hideOverlay();
+    expect(document.getElementById("redhand-overlay-banner")).toBeNull();
+    expect(document.getElementById("redhand-cursor-overlay")).toBeNull();
   });
 });

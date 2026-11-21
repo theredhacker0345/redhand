@@ -191,6 +191,12 @@ export class BrowserSession {
 
   private async dispatchMousePath(path: Array<{ x: number; y: number; delayMs: number }>): Promise<void> {
     if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    // Animate the visible redhand cursor along the same path client-side
+    // (fire-and-forget — the real CDP events below are the trusted timeline).
+    await this.cdp.evaluate(
+      this.sessionId,
+      `__redhand.animatePath(${JSON.stringify(path.map((p) => [p.x, p.y, p.delayMs]))})`,
+    );
     for (const pt of path) {
       await sleep(pt.delayMs);
       await this.cdp.send(
@@ -205,6 +211,7 @@ export class BrowserSession {
   private async pressAndRelease(point: Point): Promise<void> {
     if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
     await sleep(dwell(this.rng));
+    await this.cdp.evaluate(this.sessionId, `__redhand.cursorClick(${point.x}, ${point.y})`);
     await this.cdp.send(
       "Input.dispatchMouseEvent",
       { type: "mousePressed", x: point.x, y: point.y, button: "left", buttons: 1, clickCount: 1 },
@@ -347,9 +354,12 @@ export class BrowserSession {
     return raw.result.value === true;
   }
 
-  /** Detach the current tab session. */
+  /** Detach the current tab session (overlay removed from the page). */
   async detach(): Promise<void> {
     if (this.sessionId !== null) {
+      await this.cdp
+        .evaluate(this.sessionId, "__redhand.hideOverlay()")
+        .catch(() => undefined);
       await this.cdp.detachFromTarget(this.sessionId);
       this.sessionId = null;
     }
