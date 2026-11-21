@@ -211,8 +211,47 @@ Built by [**theredhacker0345**](https://github.com/theredhacker0345) — securit
 - **Individuals: free, period.** One person running any number of agents on any number of machines, earning unlimited bounties — free, forever, as long as every operation is performed or personally directed by you, findings go out under your own identity and accounts, and nobody else operates the tool for your benefit. The "Individual Operation" rule is stated verbatim in the license so no future reading can tax a real solo hunter.
 - **Solo client work is NOT covered** — paid pentest engagements, client testing, and employer-directed work are commercial, even when a natural person does the clicking. Attribution of use rules catch employer capture, contractor swarms, and agency laundering.
 - **Organizations: free for internal security research** on owned/authorized systems — but results can't be sold or productized, entity bounty crews (LLCs, DAOs, shared pools) don't ride the individual grant, and "internal" stops at the legal-entity boundary.
-- **Not free:** embedding/orchestrating in any offering (even via install scripts or free tiers), testing-as-a-service, paid training/certification/config-pack offerings premised on the work, reselling, attribution-washing, or license tampering. The anti-loophole clause: *the free grant follows the user and the offering, not the label of the activity.*
+- **Not free:** embedding/orchestrating in any offering (even via install scripts or free tiers), testing-as-a-service, paid training/certification/config-pack offerings premised on the work, reselling, attribution-washing, or license tampering. The anti-loophole clause: *the free grant follows the user and the offering, not the label of the activity.* Commercial inquiries: [ubaid0345@proton.me](mailto:ubaid0345@proton.me) — see [Commercial licensing](#commercial-licensing).
 - **Lawful use only + automatic termination on breach**, trademark reservation, patent grant with retaliation, AS-IS disclaimer with liability cap, Karachi/Pakistan governing law.
 - **Converts to Apache 2.0** at the Change Date (2030-11-21 for v0.1.0; each version carries its own).
 
 The full binding text is in [`LICENSE`](LICENSE) — including Section 0, the definitions, and the anti-tamper/termination machinery.
+
+---
+
+## Commercial licensing
+
+The BSL structure exists so the tool can stay **free for the people it was built for** — individuals, researchers, bounty hunters — while remaining **sustainable to maintain**. If redhand makes money inside your product or service, that's the line where it funds its own development.
+
+### Who needs a commercial license
+
+- **Product builders** — you're embedding, bundling, or orchestrating redhand inside something you offer to third parties (an agent platform, an RPA product, a QA tool, a browser-automation feature). Free tier or paid tier of *your* product doesn't matter — the embedding is the commercial use.
+- **Service providers** — you're offering automated testing, scanning, or browser-automation capabilities to clients: pentest firms, automation agencies, MSPs, managed-testing platforms.
+- **Client-facing operators** — you run redhand as part of paid engagements for clients, even if each individual operator holds their own free copy.
+
+### Who doesn't
+
+- Individuals doing personal security research or bug bounty work — **even when earning bounties** (see the Individual Operation rule in the License).
+- Organizations doing **internal** security research on systems they own or are authorized to test — results stay in-house, nothing resold or productized.
+- Anyone automating non-commercial workflows on their own systems.
+
+If you're unsure which side you're on: **email and ask** — honest questions get straight answers, and nobody gets surprise-invoiced.
+
+### What a commercial license gets you
+
+- **Written certainty** — a signed license naming your entity, use case, and term. No reliance on fair-use arguments or goodwill.
+- **Direct access to the author** — bugs you hit get fixed on your timeline, not the public queue.
+- **Priority feature work** — the humanize profiles, redaction hints, and integrations you need.
+- **Optional services** — custom integration builds, deployment help, and security review of your redhand setup, quoted separately.
+
+### How it works
+
+1. **Email** [ubaid0345@proton.me](mailto:ubaid0345@proton.me) with: your company, what you're building or running, scale (seats / volume / deployments), and timeline.
+2. **Quote back** — usually within a couple of days, with a plain-terms license addendum (no 40-page negotiations for standard cases).
+3. **Sign and ship** — you get a countersigned license; you're covered.
+
+Licensing tiers are quote-based (single-project, team, and OEM/embedded structures exist) because the right shape depends on what you're building. Nothing is priced to punish honest use — the goal is that commercial beneficiaries fund the tool's future instead of riding on it.
+
+### Why BSL and not open source?
+
+Because "free forever for researchers" and "paid by commercial beneficiaries" is exactly what BSL 1.1 makes possible — and because every version **converts to Apache 2.0** four years after publication, no commercial buyer is ever buying something that could later be yanked into a stricter license. The deal is fixed and public: free where it should be, funded where it should be, open eventually, permanently.
