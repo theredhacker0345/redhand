@@ -28,4 +28,4 @@ Read the attached tab's DOM, dispatch trusted input, evaluate JS, capture screen
 
 ## Disclosure
 
-Found a security issue in redhand? Email **arifubaid0345@gmail.com** (see LICENSE for licensing context) — please do not open a public issue for exploitable bugs. Give us 90 days for a fix before public disclosure.
+Found a security issue in redhand? Email **ubaid0345@proton.me** — please do not open a public issue for exploitable bugs. Give us 90 days for a fix before public disclosure.
