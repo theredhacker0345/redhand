@@ -1,0 +1,337 @@
+import { z } from "zod";
+import {
+  CdpClient,
+  RedhandError,
+  diffSnapshots,
+  installExecutor,
+  liveRect as coreLiveRect,
+  focusElement as coreFocusElement,
+  scrollIntoView as coreScrollIntoView,
+  selectOption as coreSelectOption,
+  snapshot as coreSnapshot,
+  renderSnapshot,
+  type RedhandElement,
+  type SnapshotDiff,
+  type TargetInfo,
+} from "@redhand/core";
+import { Rng, cadence, dwell, mousePath, type Point } from "@redhand/humanize";
+
+/**
+ * BrowserSession — one attached tab of the user's real browser.
+ * Wires the CDP client, the in-page executor and the humanize engine into
+ * the high-level operations the MCP tools expose.
+ */
+
+export type HumanizeMode = "ghost" | "natural" | "fast";
+
+export interface NetworkEntry {
+  ts: number;
+  requestId: string;
+  method: string;
+  url: string;
+  status?: number;
+  resourceType?: string;
+}
+
+const networkRequestSchema = z.object({
+  requestId: z.string(),
+  request: z.object({ url: z.string(), method: z.string() }),
+});
+const networkResponseSchema = z.object({
+  requestId: z.string(),
+  response: z.object({ status: z.number(), mimeType: z.string() }),
+});
+const screenshotSchema = z.object({ data: z.string().min(1) });
+
+const KEY_CODES: Record<string, { key: string; code: string; vk: number }> = {
+  enter: { key: "Enter", code: "Enter", vk: 13 },
+  tab: { key: "Tab", code: "Tab", vk: 9 },
+  escape: { key: "Escape", code: "Escape", vk: 27 },
+  backspace: { key: "Backspace", code: "Backspace", vk: 8 },
+  delete: { key: "Delete", code: "Delete", vk: 46 },
+  arrowup: { key: "ArrowUp", code: "ArrowUp", vk: 38 },
+  arrowdown: { key: "ArrowDown", code: "ArrowDown", vk: 40 },
+  arrowleft: { key: "ArrowLeft", code: "ArrowLeft", vk: 37 },
+  arrowright: { key: "ArrowRight", code: "ArrowRight", vk: 39 },
+  home: { key: "Home", code: "Home", vk: 36 },
+  end: { key: "End", code: "End", vk: 35 },
+};
+
+const MAX_NETWORK_BUFFER = 1000;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export class BrowserSession {
+  private readonly cdp: CdpClient;
+  private sessionId: string | null = null;
+  private readonly networkBuffer: NetworkEntry[] = [];
+  private cursor: Point | null = null;
+  private readonly rng: Rng = new Rng();
+
+  private constructor(cdp: CdpClient) {
+    this.cdp = cdp;
+  }
+
+  /** Test/embedding entry point — wrap an already-connected client. */
+  static fromClient(cdp: CdpClient): BrowserSession {
+    return new BrowserSession(cdp);
+  }
+
+  /** Discover the local CDP endpoint, connect, and attach to the first page target. */
+  static async connect(opts: { port?: number } = {}): Promise<BrowserSession> {
+    const port = opts.port ?? 9222;
+    const { wsUrl } = await CdpClient.discover(port);
+    const cdp = await CdpClient.connect(wsUrl);
+    const session = new BrowserSession(cdp);
+    const targets = await session.tabs();
+    const first = targets.find((t) => t.type === "page");
+    if (first) {
+      await session.attachToTab(first.targetId);
+    }
+    return session;
+  }
+
+  /** List browser page targets. */
+  async tabs(): Promise<TargetInfo[]> {
+    const all = await this.cdp.getTargets();
+    return all.filter((t) => t.type === "page");
+  }
+
+  /** Attach to a page target, enable domains, and install the executor. */
+  async attachToTab(targetId: string): Promise<void> {
+    this.sessionId = await this.cdp.attachToTarget(targetId);
+    this.bindNetworkHandlers(this.sessionId);
+    await this.ensureExecutor();
+  }
+
+  private bindNetworkHandlers(sessionId: string): void {
+    this.cdp.on(
+      "Network.requestWillBeSent",
+      (raw, sid) => {
+        if (sid !== sessionId) return;
+        const p = networkRequestSchema.parse(raw);
+        this.pushNetwork({ ts: Date.now(), requestId: p.requestId, method: p.request.method, url: p.request.url });
+      },
+      sessionId,
+    );
+    this.cdp.on(
+      "Network.responseReceived",
+      (raw, sid) => {
+        if (sid !== sessionId) return;
+        const p = networkResponseSchema.parse(raw);
+        const entry = this.networkBuffer.findLast((e) => e.requestId === p.requestId);
+        if (entry) {
+          entry.status = p.response.status;
+          entry.resourceType = p.response.mimeType;
+        }
+      },
+      sessionId,
+    );
+  }
+
+  private pushNetwork(entry: NetworkEntry): void {
+    this.networkBuffer.push(entry);
+    if (this.networkBuffer.length > MAX_NETWORK_BUFFER) {
+      this.networkBuffer.splice(0, this.networkBuffer.length - MAX_NETWORK_BUFFER);
+    }
+  }
+
+  private async ensureExecutor(): Promise<void> {
+    if (this.sessionId === null) {
+      throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    }
+    await installExecutor(this.cdp, this.sessionId);
+  }
+
+  /** Indexed snapshot of interactive elements, rendered for LLM consumption. */
+  async snapshot(): Promise<{ elements: RedhandElement[]; rendered: string; diff: SnapshotDiff | null }> {
+    if (this.sessionId === null) {
+      throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    }
+    let elements: RedhandElement[];
+    try {
+      elements = await coreSnapshot(this.cdp, this.sessionId);
+    } catch (err) {
+      // Navigation replaces the document and clears the executor — reinstall once.
+      if (err instanceof RedhandError && (err.code === "PROTOCOL_ERROR" || err.code === "VALIDATION")) {
+        await this.ensureExecutor();
+        elements = await coreSnapshot(this.cdp, this.sessionId);
+      } else {
+        throw err;
+      }
+    }
+    const diff = diffSnapshots(this.lastSnapshot, elements);
+    this.lastSnapshot = elements;
+    return { elements, rendered: renderSnapshot(elements), diff };
+  }
+
+  private lastSnapshot: RedhandElement[] = [];
+
+  private async dispatchMousePath(path: Array<{ x: number; y: number; delayMs: number }>): Promise<void> {
+    if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    for (const pt of path) {
+      await sleep(pt.delayMs);
+      await this.cdp.send(
+        "Input.dispatchMouseEvent",
+        { type: "mouseMoved", x: pt.x, y: pt.y, buttons: 0 },
+        { sessionId: this.sessionId },
+      );
+      this.cursor = { x: pt.x, y: pt.y };
+    }
+  }
+
+  private async pressAndRelease(point: Point): Promise<void> {
+    if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    await sleep(dwell(this.rng));
+    await this.cdp.send(
+      "Input.dispatchMouseEvent",
+      { type: "mousePressed", x: point.x, y: point.y, button: "left", buttons: 1, clickCount: 1 },
+      { sessionId: this.sessionId },
+    );
+    await sleep(this.rng.int(30, 80));
+    await this.cdp.send(
+      "Input.dispatchMouseEvent",
+      { type: "mouseReleased", x: point.x, y: point.y, button: "left", buttons: 0, clickCount: 1 },
+      { sessionId: this.sessionId },
+    );
+    this.cursor = point;
+  }
+
+  private async moveTo(i: number, mode: HumanizeMode): Promise<Point> {
+    if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    await coreScrollIntoView(this.cdp, this.sessionId, i);
+    const rect = await coreLiveRect(this.cdp, this.sessionId, i);
+    if (rect === null) {
+      throw new RedhandError("NOT_ATTACHED", `Element index ${i} no longer exists — take a new snapshot`);
+    }
+    const center: Point = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+    if (mode === "fast") {
+      await this.dispatchMousePath([{ x: center.x, y: center.y, delayMs: 0 }]);
+      return center;
+    }
+    const from: Point = this.cursor ?? { x: Math.max(center.x - 120, 5), y: Math.max(center.y - 90, 5) };
+    const path = mousePath(from, center, { rng: this.rng, overshootChance: mode === "ghost" ? 0.2 : 0.15 });
+    await this.dispatchMousePath(path);
+    return center;
+  }
+
+  /** Click an indexed element with the requested humanize mode. */
+  async click(index: number, mode: HumanizeMode = "natural"): Promise<{ point: Point }> {
+    const point = await this.moveTo(index, mode);
+    await this.pressAndRelease(point);
+    return { point };
+  }
+
+  /** Hover an indexed element (move without pressing). */
+  async hover(index: number, mode: HumanizeMode = "natural"): Promise<{ point: Point }> {
+    const point = await this.moveTo(index, mode);
+    return { point };
+  }
+
+  /** Type text into an indexed field with the requested humanize mode. */
+  async type(index: number, text: string, mode: HumanizeMode = "natural"): Promise<{ chars: number }> {
+    if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    await this.moveTo(index, mode);
+    await coreFocusElement(this.cdp, this.sessionId, index);
+    if (mode === "ghost") {
+      const steps = cadence(text, { typoProbability: 0.08, rng: this.rng });
+      for (const step of steps) {
+        await sleep(step.delayMs);
+        if (step.kind === "char") {
+          await this.cdp.send("Input.insertText", { text: step.char }, { sessionId: this.sessionId });
+        } else if (step.kind === "erase") {
+          await this.pressKey("backspace");
+        }
+      }
+      return { chars: text.length };
+    }
+    await this.cdp.send("Input.insertText", { text }, { sessionId: this.sessionId });
+    return { chars: text.length };
+  }
+
+  /** Press a named key (enter, tab, escape, arrows, ...). */
+  async pressKey(name: string): Promise<void> {
+    if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    const spec = KEY_CODES[name.toLowerCase()];
+    if (!spec) {
+      throw new RedhandError("VALIDATION", `Unknown key "${name}"`, { supported: Object.keys(KEY_CODES) });
+    }
+    await this.cdp.send(
+      "Input.dispatchKeyEvent",
+      { type: "rawKeyDown", key: spec.key, code: spec.code, windowsVirtualKeyCode: spec.vk },
+      { sessionId: this.sessionId },
+    );
+    await this.cdp.send(
+      "Input.dispatchKeyEvent",
+      { type: "keyUp", key: spec.key, code: spec.code, windowsVirtualKeyCode: spec.vk },
+      { sessionId: this.sessionId },
+    );
+  }
+
+  /** Scroll the page at the current cursor position. */
+  async scroll(direction: "up" | "down", amount = 3): Promise<void> {
+    if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    const deltaY = direction === "down" ? amount * 120 : -amount * 120;
+    const at = this.cursor ?? { x: 400, y: 300 };
+    await this.cdp.send(
+      "Input.dispatchMouseEvent",
+      { type: "mouseWheel", x: at.x, y: at.y, deltaX: 0, deltaY },
+      { sessionId: this.sessionId },
+    );
+  }
+
+  /** Select an option on an indexed <select>. */
+  async select(index: number, value: string): Promise<boolean> {
+    if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    return coreSelectOption(this.cdp, this.sessionId, index, value);
+  }
+
+  /** Evaluate JS in the page and return the JSON-serializable result. */
+  async evaluate(expression: string): Promise<unknown> {
+    if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    const raw = await this.cdp.evaluate(this.sessionId, expression, true);
+    if (raw.exceptionDetails) {
+      const desc = raw.exceptionDetails.exception?.description ?? raw.exceptionDetails.text;
+      throw new RedhandError("PROTOCOL_ERROR", `Page evaluation failed: ${desc}`, raw.exceptionDetails);
+    }
+    return raw.result.value;
+  }
+
+  /** Capture a PNG screenshot of the attached tab (base64). */
+  async screenshot(): Promise<string> {
+    if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    const result = await this.cdp.send("Page.captureScreenshot", { format: "png" }, { sessionId: this.sessionId, schema: screenshotSchema });
+    return result.data;
+  }
+
+  /** Network entries captured since the given timestamp (default: all). */
+  network(since?: number): NetworkEntry[] {
+    if (since === undefined) {
+      return [...this.networkBuffer];
+    }
+    return this.networkBuffer.filter((e) => e.ts > since);
+  }
+
+  /** Resolve when the page has been mutation-quiet for 450ms (5s cap). */
+  async waitSettled(): Promise<boolean> {
+    if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    const expression =
+      "(function(){return new Promise(function(res){var t=null;" +
+      "var o=new MutationObserver(function(){if(t){clearTimeout(t)}" +
+      "t=setTimeout(function(){o.disconnect();res(true)},450)});" +
+      "o.observe(document.documentElement,{childList:true,subtree:true,attributes:true});" +
+      "setTimeout(function(){o.disconnect();res(true)},5000)})})()";
+    const raw = await this.cdp.evaluate(this.sessionId, expression, true);
+    return raw.result.value === true;
+  }
+
+  /** Detach the current tab session. */
+  async detach(): Promise<void> {
+    if (this.sessionId !== null) {
+      await this.cdp.detachFromTarget(this.sessionId);
+      this.sessionId = null;
+    }
+  }
+}

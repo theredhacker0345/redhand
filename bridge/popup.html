@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body { font: 13px system-ui, sans-serif; width: 260px; padding: 12px; margin: 0; }
+      h1 { font-size: 14px; margin: 0 0 8px; }
+      input, button { width: 100%; box-sizing: border-box; margin: 4px 0; padding: 6px; }
+      #status { margin-top: 8px; color: #555; min-height: 16px; }
+    </style>
+  </head>
+  <body>
+    <h1>redhand bridge</h1>
+    <input id="token" type="password" placeholder="pairing token" />
+    <input id="wsUrl" type="text" placeholder="ws://127.0.0.1:8765" />
+    <button id="save">Save &amp; connect</button>
+    <button id="attach">Attach current tab</button>
+    <button id="detach">Detach current tab</button>
+    <div id="status"></div>
+    <script src="dist/popup.js" type="module"></script>
+  </body>
+</html>

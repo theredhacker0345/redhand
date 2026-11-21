@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "redhand-bridge",
+  "version": "0.1.0",
+  "description": "Connects this browser to the local redhand MCP server (attach to running browser, zero relaunch).",
+  "permissions": ["debugger", "storage", "tabs"],
+  "host_permissions": ["ws://127.0.0.1/*", "ws://localhost/*"],
+  "background": {
+    "service_worker": "dist/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "redhand bridge"
+  }
+}
