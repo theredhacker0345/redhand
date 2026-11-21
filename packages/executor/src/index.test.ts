@@ -178,7 +178,7 @@ describe("executor", () => {
     setupWindow(SIMPLE_PAGE);
     api().snapshot();
     api().cursorClick(50, 60);
-    const ripples = document.querySelectorAll("[style*='border:2px solid #ef4444']");
+    const ripples = document.querySelectorAll("[style*='border:2px solid #FF3B4E']");
     expect(ripples.length).toBe(1);
   });
 
@@ -188,5 +188,52 @@ describe("executor", () => {
     api().hideOverlay();
     expect(document.getElementById("redhand-overlay-banner")).toBeNull();
     expect(document.getElementById("redhand-cursor-overlay")).toBeNull();
+  });
+
+  it("redacts password field values from snapshots", () => {
+    setupWindow(`<input type="password" id="pw" data-x="10" data-y="20" value="hunter2-secret"><button id="lb" data-x="10" data-y="80">login</button>`);
+    const snap = api().snapshot();
+    const pw = snap.find((e) => e["tag"] === "input");
+    expect(pw?.["text"]).toBe("[REDACTED credential field]");
+  });
+
+  it("redacts credential-keyword fields (api_key, token, secret)", () => {
+    setupWindow(`
+      <input name="api_key" data-x="10" data-y="20" value="sk-live-abc123">
+      <input id="github-token" data-x="10" data-y="70" value="ghp_aaa111">
+      <input aria-label="client secret" data-x="10" data-y="120" value="shhh">
+    `);
+    const snap = api().snapshot();
+    for (const el of snap) {
+      expect(el["text"]).toBe("[REDACTED credential field]");
+    }
+  });
+
+  it("keeps placeholder/aria labels visible on redacted fields (operational info)", () => {
+    setupWindow(`<input name="api_key" placeholder="Paste your API key" value="sk-live-abc123">`);
+    const snap = api().snapshot();
+    const el = snap[0] as Record<string, unknown>;
+    expect(el["placeholder"]).toBe("Paste your API key");
+    expect(el["text"]).toBe("[REDACTED credential field]");
+  });
+
+  it("redacts PEM and long opaque blobs in textareas", () => {
+    setupWindow(
+      `<textarea id="pem" data-x="10" data-y="20" data-w="200" data-h="60">-----BEGIN PRIVATE KEY-----MIIEvQIBADANBgkqhkiG9w0BA</textarea>` +
+        `<textarea id="blob" data-x="10" data-y="100" data-w="200" data-h="60">${"a9K3mX7QpL2vB8nT4wZ6cY1dF5gH0jS9uE2rT7yU".repeat(4)}</textarea>`,
+    );
+    const snap = api().snapshot();
+    expect(snap[0]?.["text"]).toBe("[REDACTED credential field]");
+    expect(snap[1]?.["text"]).toBe("[REDACTED credential field]");
+  });
+
+  it("does NOT redact ordinary fields (email, search, username)", () => {
+    setupWindow(`
+      <input type="email" data-x="10" data-y="20" value="user@example.com">
+      <input name="q" data-x="10" data-y="70" placeholder="search the docs" value="redhand">
+    `);
+    const snap = api().snapshot();
+    expect(snap[0]?.["text"]).toBe("user@example.com");
+    expect(snap[1]?.["text"]).toBe("redhand");
   });
 });

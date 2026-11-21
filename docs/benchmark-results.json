@@ -1,0 +1,11 @@
+{
+  "date": "2026-11-21T14:03:56.855Z",
+  "url": "huntr.com/challenges",
+  "results": {
+    "navigate+snapshot (avg of 3)": 4603,
+    "snapshot alone (avg of 5)": 69,
+    "JS evaluate roundtrip (avg of 10)": 6,
+    "click natural (humanized curve, avg of 3)": 1118,
+    "click fast (teleport, avg of 3)": 460
+  }
+}

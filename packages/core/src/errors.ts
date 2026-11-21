@@ -10,7 +10,8 @@ export type RedhandErrorCode =
   | "CDP_ERROR"
   | "VALIDATION"
   | "NOT_ATTACHED"
-  | "DISCOVER_FAILED";
+  | "DISCOVER_FAILED"
+  | "TAMPERING";
 
 export interface RedhandErrorShape {
   readonly code: RedhandErrorCode;

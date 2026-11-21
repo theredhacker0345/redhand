@@ -50,6 +50,10 @@ describe("tool handlers (fixture-driven session)", () => {
     socket.routes.set("Input.dispatchKeyEvent", () => ({}));
     socket.routes.set("Runtime.evaluate", (params) => {
       const expression = (params as { expression: string }).expression;
+      if (expression.includes("tagOf")) {
+        const m = expression.match(/tagOf\((\d+)\)/);
+        return { result: { type: "string", value: m && m[1] === "2" ? "input" : "button" } };
+      }
       if (expression.includes("__redhand.snapshot")) {
         return {
           result: {
@@ -109,6 +113,10 @@ describe("tool handlers (fixture-driven session)", () => {
   it("click with a vanished index reports a typed NOT_ATTACHED error", async () => {
     socket.routes.set("Runtime.evaluate", (params) => {
       const expression = (params as { expression: string }).expression;
+      if (expression.includes("tagOf")) {
+        const m = expression.match(/tagOf\((\d+)\)/);
+        return { result: { type: "string", value: m && m[1] === "2" ? "input" : "button" } };
+      }
       if (expression.includes("__redhand.snapshot")) {
         return { result: { type: "object", value: [] } };
       }
@@ -125,6 +133,10 @@ describe("tool handlers (fixture-driven session)", () => {
   it("ghost mode types with cadence (multiple trusted insert calls)", async () => {
     socket.routes.set("Runtime.evaluate", (params) => {
       const expression = (params as { expression: string }).expression;
+      if (expression.includes("tagOf")) {
+        const m = expression.match(/tagOf\((\d+)\)/);
+        return { result: { type: "string", value: m && m[1] === "2" ? "input" : "button" } };
+      }
       if (expression.includes("__redhand.snapshot")) {
         return {
           result: {

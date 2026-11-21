@@ -21,9 +21,9 @@ export type BrowserVersion = z.infer<typeof browserVersionSchema>;
 /** Single entry from GET /json/list (page/iframe/service-worker targets). */
 export const targetInfoSchema = z.object({
   targetId: z.string().min(1),
-  type: z.string(),
-  title: z.string().optional(),
-  url: z.string().optional(),
+  type: z.string().max(32),
+  title: z.string().max(200).optional(),
+  url: z.string().max(500).optional(),
   attached: z.boolean().optional(),
 });
 
@@ -48,19 +48,19 @@ export type Rect = z.infer<typeof rectSchema>;
 /** One interactive element as reported by the in-page executor snapshot. */
 export const elementSchema = z.object({
   index: z.number().int().min(1),
-  tag: z.string().min(1),
-  role: z.string().optional(),
-  text: z.string().optional(),
-  ariaLabel: z.string().optional(),
-  placeholder: z.string().optional(),
-  href: z.string().optional(),
+  tag: z.string().min(1).max(32),
+  role: z.string().max(64).optional(),
+  text: z.string().max(200).optional(),
+  ariaLabel: z.string().max(200).optional(),
+  placeholder: z.string().max(200).optional(),
+  href: z.string().max(500).optional(),
   disabled: z.boolean().optional(),
   rect: rectSchema,
 });
 
 export type RedhandElement = z.infer<typeof elementSchema>;
 
-export const snapshotSchema = z.array(elementSchema);
+export const snapshotSchema = z.array(elementSchema).max(1500);
 
 export type Snapshot = z.infer<typeof snapshotSchema>;
 

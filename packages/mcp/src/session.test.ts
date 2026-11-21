@@ -55,6 +55,10 @@ describe("BrowserSession (fixture-driven)", () => {
     socket.routes.set("Page.addScriptToEvaluateOnNewDocument", () => ({}));
     socket.routes.set("Runtime.evaluate", (params) => {
       const expression = (params as { expression: string }).expression;
+      if (expression.includes("tagOf")) {
+        const m = expression.match(/tagOf\((\d+)\)/);
+        return { result: { type: "string", value: m && m[1] === "2" ? "input" : "button" } };
+      }
       if (expression.includes("__redhand.snapshot")) {
         return {
           result: {

@@ -58,15 +58,25 @@ Three ways to connect (all v1):
 
 - **`browser_snapshot`** — indexed interactive elements: clickability heuristics, overlap pruning (nested dupes dropped), viewport filter, tag/role/text/aria/rect per element. JSON for code + compact text for LLM prompts.
 - **Actions, all with state-after** — every call returns the fresh snapshot diff + url/title. One round-trip per decide→act→see:
-  `click(i)` · `type(i, text)` (bulk fill) · `press(k)` · `scroll` · `select(i, v)` · `hover(i)` · `drag` · `evaluate(js)` · `screenshot()` · `wait_settled()`
+  `click(i)` · `type(i, text)` (bulk fill) · `press(k)` — including **modifier combos** (`ctrl+a`, `ctrl+shift+t`, `f5`) · `scroll` · `select(i, v)` · `hover(i)` · `evaluate(js)` · `screenshot()` · `wait_settled()`
 - **`humanize` dial** — session-level, per-action override:
   - `ghost` — full curves, dwell, cadence typing with typo-and-correct
   - `natural` (default) — curves + dwell, fast typing
   - `fast` — teleport + bulk insertText (for your own admin panels)
-- **`browser_network`** — request/response capture while you drive (recon gold: watch the XHRs behind the page you're operating)
+- **Works on background tabs** — the operated tab never needs focus. You keep working; the agent keeps driving. Measured: click landed + verified while the operated tab was `visibilityState: hidden`.
+- **Visibility system** — you always know what's happening:
+  - banner on the operated tab: *"redhand is operating: \<tab name\>"*
+  - when you're watching the operated tab: *"redhand agent is seeing your current tab"* + an "agent viewed this page" card on first view
+  - toast on the tab you're looking at: *"clicking 'Sign in' — in: \<other tab\>"* while the agent works elsewhere
+  - branded red cursor tracing the agent's path + click ripples
+- **Secret redaction** — credential-field values (passwords, API keys, tokens, PEM blocks, opaque blobs) never reach the agent's context: snapshots redact values but keep labels (the agent can still type into them — it just can't read them). Screenshots mask credential fields. Network capture scrubs credential query params. Evaluate results are scanned for secret-shaped values.
+- **Tamper protection** — pages that lock/poison the executor API, reassign element indices mid-operation, or flood the candidate set are detected and surfaced as typed `TAMPERING` errors instead of silently clicked.
+- **`browser_network`** — request capture while you drive (recon gold: watch the XHRs behind the page you're operating; credential query params scrubbed)
 - **Multi-tab** — list/attach/switch tabs; per-tab attach indicator
 - **MCP server** — stdio (Claude Desktop/Cursor/ZCode) + streamable HTTP for remote agents
 - **Evaluate & screenshot** — full JS access and pixel capture for verification loops
+
+**Measured, not marketed:** snapshot **69 ms** · evaluate roundtrip **6 ms** · humanized click **1.1 s** · fast click **460 ms** on a real browser. Full methodology + comparison: [`docs/benchmarks.md`](docs/benchmarks.md).
 
 ### What redhand deliberately is
 
