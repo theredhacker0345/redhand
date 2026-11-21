@@ -105,7 +105,7 @@ describe("tool handlers (fixture-driven session)", () => {
     };
     for (const tool of toolDefinitions()) {
       const input = inputs[tool.name];
-      const content = await tool.run(session, input ?? {});
+      const content = await tool.run(async () => session, input ?? {});
       expect(content.length).toBeGreaterThan(0);
     }
   });
@@ -127,7 +127,7 @@ describe("tool handlers (fixture-driven session)", () => {
     });
     const clickTool = toolDefinitions().find((t) => t.name === "browser_click");
     expect(clickTool).toBeDefined();
-    await expect(clickTool?.run(session, { index: 9 })).rejects.toMatchObject({ code: "NOT_ATTACHED" });
+    await expect(clickTool?.run(async () => session, { index: 9 })).rejects.toMatchObject({ code: "NOT_ATTACHED" });
   });
 
   it("ghost mode types with cadence (multiple trusted insert calls)", async () => {
@@ -158,7 +158,7 @@ describe("tool handlers (fixture-driven session)", () => {
     });
     const before = socket.sent.filter((f) => f["method"] === "Input.insertText").length;
     const typeTool = toolDefinitions().find((t) => t.name === "browser_type");
-    await typeTool?.run(session, { index: 1, text: "abc", humanize: "ghost" });
+    await typeTool?.run(async () => session, { index: 1, text: "abc", humanize: "ghost" });
     const after = socket.sent.filter((f) => f["method"] === "Input.insertText").length;
     expect(after - before).toBeGreaterThanOrEqual(3);
   });

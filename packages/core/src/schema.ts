@@ -22,8 +22,8 @@ export type BrowserVersion = z.infer<typeof browserVersionSchema>;
 export const targetInfoSchema = z.object({
   targetId: z.string().min(1),
   type: z.string().max(32),
-  title: z.string().max(200).optional(),
-  url: z.string().max(500).optional(),
+  title: z.string().transform((s) => s.slice(0, 200)).optional(),
+  url: z.string().transform((s) => s.slice(0, 500)).optional(),
   attached: z.boolean().optional(),
 });
 
