@@ -156,10 +156,12 @@ describe("executor", () => {
     expect(snap.map((e) => e["tag"])).toEqual(["div"]);
   });
 
-  it("installs the visibility overlay: banner + cursor", () => {
+  it("installs the visibility overlay: banner (with tab label) + cursor", () => {
     setupWindow(SIMPLE_PAGE);
     api().snapshot();
-    expect(document.getElementById("redhand-overlay-banner")?.textContent).toContain("redhand is operating this tab");
+    const banner = document.getElementById("redhand-overlay-banner");
+    expect(banner?.textContent).toContain("redhand is operating:");
+    expect(banner?.textContent).toContain("localhost");
     expect(document.getElementById("redhand-cursor-overlay")).not.toBeNull();
   });
 

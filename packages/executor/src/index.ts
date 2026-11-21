@@ -153,6 +153,12 @@ export const EXECUTOR_SOURCE = `
 
   var BANNER_ID = 'redhand-overlay-banner';
   var CURSOR_ID = 'redhand-cursor-overlay';
+  var TOAST_ID = 'redhand-tab-toast';
+
+  function tabLabel() {
+    var t = document.title || window.location.hostname || 'this tab';
+    return t.length > 48 ? t.slice(0, 48) + '...' : t;
+  }
 
   function ensureOverlay() {
     if (!document.body) { return; }
@@ -162,8 +168,8 @@ export const EXECUTOR_SOURCE = `
       b.setAttribute('style', 'position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:2147483647;'
         + 'background:#111827;color:#f9fafb;font:600 12px system-ui,sans-serif;padding:6px 14px;'
         + 'border-radius:9999px;border:1px solid #ef4444;box-shadow:0 2px 10px rgba(0,0,0,.35);'
-        + 'pointer-events:none;opacity:.92');
-      b.textContent = '🔴 redhand is operating this tab';
+        + 'pointer-events:none;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60vw');
+      b.textContent = '🔴 redhand is operating: ' + tabLabel();
       document.body.appendChild(b);
     }
     if (!document.getElementById(CURSOR_ID)) {
@@ -177,6 +183,26 @@ export const EXECUTOR_SOURCE = `
         + 'fill="#ef4444" stroke="#ffffff" stroke-width="1.2"/></svg>';
       document.body.appendChild(c);
     }
+  }
+
+  function showToast(text) {
+    if (document.visibilityState !== 'visible') { return; }
+    var root = document.body || document.documentElement;
+    if (!root) { return; }
+    var el = document.getElementById(TOAST_ID);
+    if (!el) {
+      el = document.createElement('div');
+      el.id = TOAST_ID;
+      el.setAttribute('style', 'position:fixed;bottom:14px;right:14px;z-index:2147483647;'
+        + 'background:#111827;color:#f9fafb;font:600 12px system-ui,sans-serif;padding:8px 14px;'
+        + 'border-radius:10px;border:1px solid #ef4444;box-shadow:0 4px 14px rgba(0,0,0,.4);'
+        + 'pointer-events:none;max-width:340px;opacity:0;transition:opacity .25s ease');
+      root.appendChild(el);
+    }
+    el.textContent = '🔴 ' + text;
+    el.style.opacity = '1';
+    if (el.__redhandToastTimer) { clearTimeout(el.__redhandToastTimer); }
+    el.__redhandToastTimer = setTimeout(function () { el.style.opacity = '0'; }, 3500);
   }
 
   function cursorMove(x, y) {
@@ -334,7 +360,9 @@ export const EXECUTOR_SOURCE = `
     cursorClick: cursorClick,
     animatePath: animatePath,
     hideOverlay: hideOverlay,
-    ensureOverlay: ensureOverlay
+    ensureOverlay: ensureOverlay,
+    showToast: showToast,
+    tabLabel: tabLabel
   };
 })();
 `;

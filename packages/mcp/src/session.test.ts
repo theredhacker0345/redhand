@@ -44,9 +44,14 @@ describe("BrowserSession (fixture-driven)", () => {
   beforeAll(() => {
     socket = new RoutingSocket();
     socket.routes.set("Target.getTargets", () => ({
-      targetInfos: [{ targetId: "tab-1", type: "page", title: "Test Page", url: "https://test.local", attached: false }],
+      targetInfos: [
+        { targetId: "tab-1", type: "page", title: "Test Page", url: "https://test.local", attached: false },
+        { targetId: "tab-2", type: "page", title: "Other Tab", url: "https://other.local", attached: false },
+      ],
     }));
     socket.routes.set("Target.attachToTarget", () => ({ sessionId: "sess-1" }));
+    socket.routes.set("Target.createTarget", () => ({ targetId: "tab-3" }));
+    socket.routes.set("Page.navigate", () => ({}));
     socket.routes.set("Page.addScriptToEvaluateOnNewDocument", () => ({}));
     socket.routes.set("Runtime.evaluate", (params) => {
       const expression = (params as { expression: string }).expression;
@@ -134,6 +139,35 @@ describe("BrowserSession (fixture-driven)", () => {
     const session = BrowserSession.fromClient(CdpClient.fromSocket(socket));
     await session.attachToTab("tab-1");
     await expect(session.pressKey("meta")).rejects.toMatchObject({ code: "VALIDATION" });
+  });
+
+  it("navigate + createTab wire through CDP and re-install the executor", async () => {
+    const session = BrowserSession.fromClient(CdpClient.fromSocket(socket));
+    await session.attachToTab("tab-1");
+    await session.navigate("https://test.local/page2");
+    const navFrames = socket.sent.filter((f) => f["method"] === "Page.navigate");
+    expect(navFrames).toHaveLength(1);
+    expect((navFrames[0]?.["params"] as { url: string }).url).toBe("https://test.local/page2");
+    const tab = await session.createTab("https://test.local/new");
+    expect(tab.targetId).toBe("tab-3");
+    const createFrames = socket.sent.filter((f) => f["method"] === "Target.createTarget");
+    expect((createFrames[0]?.["params"] as { url: string }).url).toBe("https://test.local/new");
+  });
+
+  it("broadcastToast attaches other tabs and evaluates a visibility-gated toast", async () => {
+    const session = BrowserSession.fromClient(CdpClient.fromSocket(socket));
+    await session.attachToTab("tab-1");
+    socket.sent.length = 0;
+    await session.broadcastToast("working in another tab: Test Page");
+    const evals = socket.sent.filter((f) => f["method"] === "Runtime.evaluate");
+    expect(evals.length).toBeGreaterThanOrEqual(1);
+    const expression = (evals[0]?.["params"] as { expression: string }).expression;
+    expect(expression).toContain("visibilityState");
+    expect(expression).toContain("redhand-tab-toast");
+    expect(expression).toContain("working in another tab: Test Page");
+    // primary tab is never toasted
+    const sessionIds = evals.map((f) => f["sessionId"]);
+    expect(sessionIds.every((s) => s !== "sess-1" || evals.length === 1)).toBe(true);
   });
 });
 

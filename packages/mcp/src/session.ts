@@ -66,9 +66,13 @@ function sleep(ms: number): Promise<void> {
 export class BrowserSession {
   private readonly cdp: CdpClient;
   private sessionId: string | null = null;
+  private primaryTargetId: string | null = null;
+  private primaryTitle = "a tab";
   private readonly networkBuffer: NetworkEntry[] = [];
   private cursor: Point | null = null;
   private readonly rng: Rng = new Rng();
+  /** Lazily-attached sessions for OTHER page tabs (toast broadcast). */
+  private readonly sideSessions = new Map<string, string>();
 
   private constructor(cdp: CdpClient) {
     this.cdp = cdp;
@@ -120,10 +124,48 @@ export class BrowserSession {
   /** Attach to a page target, enable domains, and install the executor. */
   async attachToTab(targetId: string): Promise<void> {
     this.sessionId = await this.cdp.attachToTarget(targetId);
+    this.primaryTargetId = targetId;
+    const tabs = await this.tabs();
+    this.primaryTitle = tabs.find((t) => t.targetId === targetId)?.title?.slice(0, 48) ?? "a tab";
     await this.cdp.send("Page.enable", {}, { sessionId: this.sessionId });
     await this.cdp.send("Network.enable", {}, { sessionId: this.sessionId });
     this.bindNetworkHandlers(this.sessionId);
     await this.ensureExecutor();
+  }
+
+  /**
+   * Show a toast on the tab the user is CURRENTLY looking at (any visible
+   * page tab other than the one being operated). Self-contained script —
+   * works on tabs where the full executor was never installed.
+   */
+  async broadcastToast(text: string): Promise<void> {
+    if (this.sessionId === null) return;
+    const toastScript =
+      `(function(){if(document.visibilityState!=='visible')return;` +
+      `var r=document.body||document.documentElement;if(!r)return;` +
+      `var T='redhand-tab-toast';var el=document.getElementById(T);` +
+      `if(!el){el=document.createElement('div');el.id=T;` +
+      `el.setAttribute('style','position:fixed;bottom:14px;right:14px;z-index:2147483647;` +
+      `background:#111827;color:#f9fafb;font:600 12px system-ui,sans-serif;padding:8px 14px;` +
+      `border-radius:10px;border:1px solid #ef4444;box-shadow:0 4px 14px rgba(0,0,0,.4);` +
+      `pointer-events:none;max-width:340px;opacity:0;transition:opacity .25s ease');` +
+      `r.appendChild(el);}` +
+      `el.textContent='🔴 ${text.replace(/'/g, "")}';el.style.opacity='1';` +
+      `if(el.__t){clearTimeout(el.__t)}el.__t=setTimeout(function(){el.style.opacity='0'},3500)})()`;
+    const targets = await this.tabs();
+    for (const target of targets) {
+      if (target.targetId === this.primaryTargetId) continue;
+      let sid = this.sideSessions.get(target.targetId);
+      if (sid === undefined) {
+        try {
+          sid = await this.cdp.attachToTarget(target.targetId);
+          this.sideSessions.set(target.targetId, sid);
+        } catch {
+          continue;
+        }
+      }
+      await this.cdp.evaluate(sid, toastScript).catch(() => undefined);
+    }
   }
 
   private bindNetworkHandlers(sessionId: string): void {
@@ -248,6 +290,7 @@ export class BrowserSession {
   async click(index: number, mode: HumanizeMode = "natural"): Promise<{ point: Point }> {
     const point = await this.moveTo(index, mode);
     await this.pressAndRelease(point);
+    await this.broadcastToast(`working in another tab: ${this.primaryTitle}`).catch(() => undefined);
     return { point };
   }
 
@@ -275,6 +318,7 @@ export class BrowserSession {
       return { chars: text.length };
     }
     await this.cdp.send("Input.insertText", { text }, { sessionId: this.sessionId });
+    await this.broadcastToast(`typing in another tab: ${this.primaryTitle}`).catch(() => undefined);
     return { chars: text.length };
   }
 
