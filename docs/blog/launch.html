@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset='utf-8'><title>I Orchestrated an AI Agent Into Building a Browser Operator. Then It Submitted Itself to a Directory.</title></head><body><article><p># Medium draft v2 — redhand launch</p>
+<p><em>Three days, one AI agent, two red-team passes, 27 license exploits, and a build test that passed in 85 seconds. This is what orchestration over prompting actually looks like.</em></p>
+<p>Last month I wrote that prompting is a dead end and orchestration is where agents actually get useful.</p>
+<p>This post is the case study.</p>
+<p>Three days ago I got curious about how commercial AI browser operators work — the ones where an agent signs into websites, fills forms, clicks buttons while the human watches. The marketing says &quot;AI controls your browser.&quot; I didn&#x27;t want the marketing. I wanted the mechanism.</p>
+<p>So I ran an investigation the way I now run everything: I pointed. An AI agent executed. I graded the output, killed what was wrong, and redirected.</p>
+<h2>What the decompile revealed</h2>
+<p>The operator I studied is an extension. Decompiled, the secret wasn&#x27;t AI at all — it was three boring-looking engineering decisions stacked together:</p>
+<p><strong>Element-index addressing, not vision.</strong> No screenshots. No &quot;find the button in this image.&quot; The tool tags every interactive element with an ID, builds a text list — index, tag, label, position — and hands the model a number to answer with. Coordinates get computed from the DOM *at click time*, not from a stale screenshot.</p>
+<p><strong>Trusted input.</strong> Every click and keystroke goes through the browser&#x27;s own input pipeline. The page receives events with `isTrusted: true` — indistinguishable from a human.</p>
+<p><strong>State-after-every-action.</strong> Each action returns the new element list. The model closes decide→act→see in one round-trip. No re-screenshotting to check if the click worked.</p>
+<p>Vision loops — screenshot, model, guess coordinates, miss, retry — are doing it wrong. The tools that get browser control right stopped asking a model to *see* and started letting it *read*.</p>
+<h2>The rebuild, orchestrated</h2>
+<p>I didn&#x27;t write the code. That&#x27;s not the flex people think it is — it&#x27;s the workflow.</p>
+<p>I set the rules: raw CDP over WebSocket, no automation frameworks, the browser is never a disposable copy (your real sessions, your real fingerprint), the user always knows what&#x27;s happening, secrets stay secrets. The agent picked the language, wrote the code, and defended the choices when I pushed back — and I pushed back twice.</p>
+<p>Once on a lazy design decision. Once when the first draft of this project&#x27;s own README erased who did what — a 7 out of 10, and the reason this post exists in its current form.</p>
+<p>The result: a tool where an AI agent can drive your *real* logged-in browser — element-index addressing, humanized mouse curves with overshoot-and-correct, cadence typing with typos, state-after every action. Snapshot in 69 milliseconds. Click in 0.46 to 1.1 seconds, deliberately humanized.</p>
+<h2>The part GitHub taught me</h2>
+<p>The flow I&#x27;m proudest of: my agent submitting redhand to a directory listing. By itself. While I watched WhatsApp.</p>
+<p>The agent opened the site, signed in through the GitHub OAuth button, authorized the app, created the account, opened the Add Server wizard, filled the form, configured its own Docker build, and triggered Build &amp; Release.</p>
+<p>One minute twenty-five seconds later: build test passed. Listing live. Score badge published.</p>
+<p>The instructive failure came first. My agent&#x27;s first attempts to authorize used JavaScript — `form.requestSubmit()`, direct `.click()` calls. GitHub rejected every single one: `error=access_denied. The user has denied your application access.`</p>
+<p>The form was submitting fine. But without a <strong>user-activated gesture</strong>, GitHub treats the authorization as denied. A silent script click isn&#x27;t consent — by design.</p>
+<p>The fix: stop clicking from JavaScript. Scroll the button into view, let the tool index it, and dispatch a real trusted press through the input pipeline — the exact event a human click produces. Authorized on the first try.</p>
+<p>That&#x27;s the whole lesson of this project in one bug. *Calling* an action and *performing* it are different things, and the gap is where most agent tooling dies.</p>
+<h2>The red team, turned inward</h2>
+<p>Two features got the adversarial treatment, because I know how I&#x27;d attack them.</p>
+<p><strong>Secret redaction.</strong> Credential values (passwords, API keys, tokens) get redacted at the source — the agent can type into a login field but the value never enters the agent&#x27;s context. I had two red-team agents attack that guarantee. They found twelve bypasses: secrets as plain page text, contenteditable pseudo-fields, token-shaped strings under 120 characters, page-poisoned APIs, element reassignment between snapshot and click. Every one patched — text-channel scrubbing, closure registries, poison-proof installs, tamper detection that throws typed errors instead of silently clicking wrong things.</p>
+<p><strong>The license.</strong> The first draft of the Additional Use Grant said &quot;free for bug bounty work.&quot; My exploit analysis was one sentence: *BugHound Ltd builds a scanning SaaS on this, sells it to clients, and calls it bug bounty work — free forever.* Three agents took that further and found twenty-seven exploits total. The rewritten grant follows the *user and the offering*, not the label of the activity. Individuals stay free — even paid bounties. Entities, products, and client work don&#x27;t.</p>
+<h2>The visibility system</h2>
+<p>The part users actually feel: you always know what the agent is doing.</p>
+<p>A banner sits on every operated tab — *&quot;redhand is operating: \&lt;tab name\&gt;&quot;*. A red cursor traces the agent&#x27;s path with click ripples. When the agent works in a background tab while you&#x27;re elsewhere, your active tab shows a toast — *&quot;clicking &#x27;Sign in&#x27; — in: \&lt;other tab\&gt;&quot;*.</p>
+<p>The background part is not a trick. I verified it: clicked elements in a tab whose `visibilityState` was `hidden` while I was chatting on WhatsApp. The tab never needed focus. You never stopped working.</p>
+<h2>The honest part</h2>
+<p>- Screenshots mask credential fields, but text a page renders openly is text a multimodal model can read. Documented, not hidden.</p>
+<p>- Background tabs throttle their own timers — cosmetic animations slow down. The actions don&#x27;t.</p>
+<p>- The humanized click is deliberately slower than raw automation (1.1s vs 0.46s). That&#x27;s the anti-detection feature working. There&#x27;s a `fast` dial for your own admin panels.</p>
+<p>- Async re-grading exists: my tool-description upgrades are live, the score re-evaluation is still processing. The badge updates itself.</p>
+<h2>What it&#x27;s for</h2>
+<p>Anything a browser can do:</p>
+<p>- The repetitive form you fill every day — seconds, no typos, while you do something else.</p>
+<p>- Data extraction behind logins, with the network traffic captured alongside.</p>
+<p>- QA loops on your own apps with real sessions.</p>
+<p>- Security research on authorized targets — the niche it was born in.</p>
+<p>- Browser games. I&#x27;m not even embarrassed. An agent playing with humanized mouse curves is the best demo I&#x27;ve recorded.</p>
+<h2>Orchestration, demonstrated</h2>
+<p>The stack that shipped this: one human directing, one AI agent executing, two red-team agents attacking, three license-review agents exploiting. Every grade I gave came back as a fix. Every exploit came back as a patch.</p>
+<p>That&#x27;s the difference between prompting and orchestrating. Prompting is asking a model for an answer. Orchestration is pointing a system at a goal and grading the output until it&#x27;s done.</p>
+<p>redhand is on GitHub. The README has a live demo GIF — the banner, the red cursor, the typo-and-correct typing. The full reverse-engineering notes, the benchmarks, and the license are in the docs.</p>
+<p><strong>⭐ <a href="https://github.com/theredhacker0345/redhand">github.com/theredhacker0345/redhand</a></strong></p></article></body></html>
