@@ -12,7 +12,6 @@ export const EXECUTOR_VERSION = "0.1.0";
 export const EXECUTOR_SOURCE = `
 (function () {
   'use strict';
-  if (window.__redhand) { window.__redhand.version = '0.1.0'; return; }
 
   var INDEX_ATTR = 'data-redhand-id';
   var MAX_CANDIDATES = 1500;
@@ -50,7 +49,8 @@ export const EXECUTOR_SOURCE = `
   }
 
   function isClickable(el) {
-    if (CLICKABLE_TAGS[el.tagName]) { return true; }
+    var tag = el.tagName.toUpperCase();
+    if (CLICKABLE_TAGS[tag]) { return true; }
     var role = el.getAttribute('role');
     if (role && CLICKABLE_ROLES[role.toLowerCase()]) { return true; }
     if (el.hasAttribute('onclick') || el.hasAttribute('jsaction') || el.hasAttribute('ng-click')) { return true; }
@@ -70,9 +70,11 @@ export const EXECUTOR_SOURCE = `
     var out = [];
     for (var i = 0; i < all.length; i++) {
       var el = all[i];
-      if (!el || !el.tagName || BLACKLIST[el.tagName]) { continue; }
+      if (!el || !el.tagName) { continue; }
+      var tag = el.tagName.toUpperCase();
+      if (BLACKLIST[tag]) { continue; }
       var clickable = isClickable(el);
-      var isImg = el.tagName === 'IMG';
+      var isImg = tag === 'IMG';
       if (!clickable) {
         if (!isImg) { continue; }
         if (el.offsetWidth < IMG_MIN_SIZE || el.offsetHeight < IMG_MIN_SIZE) { continue; }
@@ -106,7 +108,15 @@ export const EXECUTOR_SOURCE = `
         var minArea = Math.min(areas[a], areas[b]);
         if (minArea <= 0) { continue; }
         if (inter / minArea > OVERLAP_RATIO) {
-          if (areas[a] >= areas[b]) { dropped[a] = true; } else { dropped[b] = true; }
+          // Prefer keeping the interactive-tag element (A/BUTTON/INPUT/...) so
+          // card-style wrappers keep their href; otherwise drop the larger one.
+          var aTag = els[a].tagName.toUpperCase();
+          var bTag = els[b].tagName.toUpperCase();
+          var aTagged = !!CLICKABLE_TAGS[aTag];
+          var bTagged = !!CLICKABLE_TAGS[bTag];
+          if (aTagged !== bTagged) {
+            if (aTagged) { dropped[b] = true; } else { dropped[a] = true; }
+          } else if (areas[a] >= areas[b]) { dropped[a] = true; } else { dropped[b] = true; }
         }
       }
     }

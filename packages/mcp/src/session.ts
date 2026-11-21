@@ -99,9 +99,29 @@ export class BrowserSession {
     return all.filter((t) => t.type === "page");
   }
 
+  /** Open a new tab with the given URL and attach to it. */
+  async createTab(url: string): Promise<TargetInfo> {
+    const created = await this.cdp.send("Target.createTarget", { url }, { schema: z.object({ targetId: z.string() }) });
+    await this.attachToTab(created.targetId);
+    const tabs = await this.tabs();
+    const createdTab = tabs.find((t) => t.targetId === created.targetId);
+    return createdTab ?? { targetId: created.targetId, type: "page" };
+  }
+
+  /** Navigate the attached tab to a URL and wait for the document to settle. */
+  async navigate(url: string): Promise<void> {
+    if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    await this.cdp.send("Page.navigate", { url }, { sessionId: this.sessionId });
+    await sleep(1200);
+    await this.waitSettled();
+    await this.ensureExecutor();
+  }
+
   /** Attach to a page target, enable domains, and install the executor. */
   async attachToTab(targetId: string): Promise<void> {
     this.sessionId = await this.cdp.attachToTarget(targetId);
+    await this.cdp.send("Page.enable", {}, { sessionId: this.sessionId });
+    await this.cdp.send("Network.enable", {}, { sessionId: this.sessionId });
     this.bindNetworkHandlers(this.sessionId);
     await this.ensureExecutor();
   }
