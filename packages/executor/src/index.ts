@@ -364,7 +364,7 @@ export const EXECUTOR_SOURCE = `
 
   var SENSITIVE_HINTS = /token|api[-_]?key|apikey|secret|password|passwd|pwd|pass|credential|auth|authz|bearer|session|sess|sid|cookie|jwt|otp|one[-_]?time|nonce|sig|signature|refresh|private[-_]?key/i;
   var PEM_PATTERN = /-----BEGIN[A-Z ]*PRIVATE KEY-----|-----BEGIN [A-Z ]+-----/i;
-  var TOKEN_SHAPE = /ghp_[A-Za-z0-9_]{20,}|gho_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|xox[abprs]-[A-Za-z0-9-]{10,}|eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/;
+  var TOKEN_SHAPE = /ghp_[A-Za-z0-9_]{20,}|gho_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|xox[abprs]-[A-Za-z0-9-]{10,}|eyJ[A-Za-z0-9_-]{8,}[.][A-Za-z0-9_-]{8,}[.][A-Za-z0-9_-]{8,}/;
 
   /* Credential-field detection: password inputs, fields whose name/id/
      placeholder/aria/autocomplete suggest secrets, and secret-looking
