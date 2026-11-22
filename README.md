@@ -243,7 +243,7 @@ If you're unsure which side you're on: **email and ask** — honest questions ge
 ### What a commercial license gets you
 
 - **Written certainty** — a signed license naming your entity, use case, and term. No reliance on fair-use arguments or goodwill.
-- **Direct access to the author** — bugs you hit get fixed on your timeline, not the public queue.
+- **Direct access to the author** — bugs you hit get fixed on best-effort priority, not the public queue.
 - **Priority feature work** — the humanize profiles, redaction hints, and integrations you need.
 - **Optional services** — custom integration builds, deployment help, and security review of your redhand setup, quoted separately.
 
