@@ -1,24 +1,27 @@
 /**
- * GIF demo capture — redhand operates a styled sandbox demo page while
- * frames are captured concurrently. Frames assemble into a GIF afterwards
- * (WSL + Pillow). Never touches live third-party pages.
+ * GIF demo capture v2 — crisp high-DPI capture.
+ * Emulation override renders at 2x device scale; the GIF assembles at 1x
+ * (downscaled 2x = supersampled text, no blur). Solid background keeps the
+ * palette clean. Isolated sandbox tab — never touches live pages.
  * Run: node --experimental-strip-types examples/09-gif-demo.ts
  */
-import { writeFileSync } from "node:fs";
+import { writeFileSync, writeSync } from "node:fs";
 import { BrowserSession } from "../packages/mcp/dist/index.js";
 
-const PORT = Number(process.env["REDHAND_CDP_PORT"] ?? 9223);
-const FRAME_DIR = "C:/Users/Ubaid/.zcode/workspace/default/poc/frames";
+const PORT = Number(process.env["REDHAND_CDP_PORT"] ?? 9222);
+const FRAME_DIR = "C:/Users/Ubaid/.zcode/workspace/default/poc/frames2";
 let frameIdx = 0;
+function log(line: string): void {
+  writeSync(1, line + "\n");
+}
 
 const DEMO_PAGE_HTML = `
 (function () {
   document.documentElement.innerHTML = ''
     + '<head><style>'
     + 'body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;'
-    + 'background:radial-gradient(circle at 30% 20%, #1a1f2e 0%, #0B0E14 60%);'
-    + 'font-family:system-ui,sans-serif;color:#E6E9EF}'
-    + '.card{background:rgba(17,24,39,.92);border:1px solid rgba(255,59,78,.45);'
+    + 'background:#0B0E14;font-family:system-ui,sans-serif;color:#E6E9EF}'
+    + '.card{background:#111827;border:1px solid rgba(255,59,78,.45);'
     + 'border-radius:6px;padding:34px 38px;width:380px;box-shadow:0 20px 60px rgba(0,0,0,.6)}'
     + 'h1{font-size:20px;margin:0 0 4px}.brand{color:#FF3B4E}p{margin:0 0 22px;color:#8B93A5;font-size:12.5px}'
     + 'label{display:block;font-size:11px;color:#8B93A5;margin:14px 0 5px;letter-spacing:.4px}'
@@ -49,8 +52,9 @@ const DEMO_PAGE_HTML = `
 
 const session = await BrowserSession.connect({ port: PORT });
 
-// Isolated sandbox tab with the styled demo page.
+// Isolated sandbox tab + high-DPI viewport (2x device scale).
 await session.createTab("about:blank");
+await session.setViewport(1280, 800, 2);
 await session.evaluate(DEMO_PAGE_HTML);
 await session.evaluate(
   "window.__redhand.clear(); document.querySelectorAll('[data-redhand-id]').forEach(function(e){e.removeAttribute('data-redhand-id')}); 'demo-ready'",
@@ -69,7 +73,7 @@ const captureLoop = (async () => {
   }
 })();
 
-await new Promise((r) => setTimeout(r, 700));
+await new Promise((r) => setTimeout(r, 900));
 const snap = await session.snapshot();
 
 // ghost-type the user field (cadence + typos — the signature visual)
@@ -94,5 +98,5 @@ await captureLoop;
 for (const data of frames) {
   writeFileSync(`${FRAME_DIR}/f${String(frameIdx++).padStart(3, "0")}.png`, Buffer.from(data, "base64"));
 }
-process.stdout.write(`captured ${frames.length} frames -> ${FRAME_DIR}\n`);
+log(`captured ${frames.length} frames -> ${FRAME_DIR}`);
 await session.detach();

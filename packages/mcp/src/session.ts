@@ -537,6 +537,20 @@ export class BrowserSession {
     }
   }
 
+  /**
+   * Override the tab's viewport metrics (for crisp high-DPI capture).
+   * deviceScaleFactor 2 renders at 2x pixel density; captureScreenshot
+   * returns the doubled image and the GIF/assembly downscales to 1x.
+   */
+  async setViewport(width: number, height: number, deviceScaleFactor: number): Promise<void> {
+    if (this.sessionId === null) throw new RedhandError("NOT_ATTACHED", "No tab attached");
+    await this.cdp.send(
+      "Emulation.setDeviceMetricsOverride",
+      { width, height, deviceScaleFactor, mobile: false },
+      { sessionId: this.sessionId },
+    );
+  }
+
   /** Network entries captured since the given timestamp (default: all). */
   network(since?: number): NetworkEntry[] {
     if (since === undefined) {
