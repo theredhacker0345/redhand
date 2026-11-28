@@ -145,6 +145,15 @@ redhand-mcp.exe serve
 redhand setup
 ```
 
+### Bridge setup (attach to your already-running browser)
+
+1. Run `npx redhand-mcp` — it prints the hub URL and a **pairing token**.
+2. Load the bridge once: `chrome://extensions` → Developer mode → **Load unpacked** → `bridge/` from this repo (packaged with the npm release).
+3. Click the redhand-bridge icon, paste the pairing token, **Save & connect**.
+4. Done — the extension relays `chrome.debugger` to redhand over localhost. Your browser stays running; no debug-port relaunch, ever.
+
+The hub binds `127.0.0.1` only and rejects any connection without the token.
+
 Agent-side, the tools are self-explanatory:
 
 ```

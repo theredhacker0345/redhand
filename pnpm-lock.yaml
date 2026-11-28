@@ -199,6 +199,9 @@ importers:
       vitest:
         specifier: ^3.0.0
         version: 3.2.7(@types/node@22.20.5)(happy-dom@15.11.7)(supports-color@7.2.0)
+      ws:
+        specifier: ^8.23.0
+        version: 8.23.0
 
   bridge:
     devDependencies:
@@ -238,7 +241,7 @@ importers:
         version: link:../executor
       devtools-protocol:
         specifier: latest
-        version: 0.0.1750115
+        version: 0.0.1755318
       ws:
         specifier: ^8.18.0
         version: 8.23.0
@@ -306,6 +309,9 @@ importers:
       '@redhand/humanize':
         specifier: workspace:*
         version: link:../humanize
+      ws:
+        specifier: ^8.23.0
+        version: 8.23.0
       zod:
         specifier: ^4.6.6
         version: 4.6.7
@@ -313,6 +319,9 @@ importers:
       '@types/node':
         specifier: ^22.10.0
         version: 22.20.5
+      '@types/ws':
+        specifier: ^8.18.2
+        version: 8.18.2
       '@vitest/coverage-v8':
         specifier: ^3.0.0
         version: 3.2.7(supports-color@7.2.0)(vitest@3.2.7(@types/node@22.20.5)(happy-dom@15.11.7)(supports-color@7.2.0))
@@ -1077,8 +1086,8 @@ packages:
     resolution: {integrity: sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==}
     engines: {node: '>= 0.8'}
 
-  devtools-protocol@0.0.1750115:
-    resolution: {integrity: sha512-9jgv4RzHk2vBsJcsOVK9dtNpj2xiSpg2ffio+NtPfwnvDcIb09p4KYo+5T8qs7jJigPOJ6gfaZk0j7fD63Qegg==}
+  devtools-protocol@0.0.1755318:
+    resolution: {integrity: sha512-ZTuMGdpyddC36xxOcDACwjr4QJvfz/XtbdomhoJN8rOv+Z8A4ApwEIpsUkBdlIeKE2QtXVU268jiJWpgokDQHg==}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -2564,7 +2573,7 @@ snapshots:
 
   depd@2.0.0: {}
 
-  devtools-protocol@0.0.1750115: {}
+  devtools-protocol@0.0.1755318: {}
 
   dunder-proto@1.0.1:
     dependencies:

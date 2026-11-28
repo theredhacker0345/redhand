@@ -1,14 +1,16 @@
 {
   "name": "redhand",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "packageManager": "pnpm@12.21.0",
   "engines": {
     "node": ">=22"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   },
   "scripts": {
     "build": "turbo run build",
@@ -25,6 +27,7 @@
     "turbo": "^2.3.0",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.18.0",
-    "vitest": "^3.0.0"
+    "vitest": "^3.0.0",
+    "ws": "^8.23.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "redhand-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The agent's hand inside your browser - Manus-grade browser control for AI agents via raw CDP + MCP. Your real browser, your sessions, humanized input.",
   "license": "BUSL-1.1",
   "author": "theredhacker0345",
@@ -38,6 +38,7 @@
     }
   },
   "scripts": {
+    "prepublishOnly": "pnpm -w run lint && pnpm -w run typecheck && pnpm -w run test",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --coverage",
@@ -47,12 +48,22 @@
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@redhand/core": "workspace:*",
     "@redhand/humanize": "workspace:*",
+    "ws": "^8.23.0",
     "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
+    "@types/ws": "^8.18.2",
     "@vitest/coverage-v8": "^3.0.0",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"
-  }
+  },
+  "bundleDependencies": [
+    "@redhand/core",
+    "@redhand/humanize",
+    "ws",
+    "zod",
+    "@modelcontextprotocol/sdk",
+    "devtools-protocol"
+  ]
 }

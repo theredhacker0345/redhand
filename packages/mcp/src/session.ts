@@ -159,9 +159,8 @@ export class BrowserSession {
   }
 
   /** Discover the local CDP endpoint, connect, and attach to the first page target. */
-  static async connect(opts: { port?: number } = {}): Promise<BrowserSession> {
-    const port = opts.port ?? 9222;
-    const { wsUrl } = await CdpClient.discover(port);
+  static async connect(opts: { port?: number; wsUrl?: string } = {}): Promise<BrowserSession> {
+    const wsUrl = opts.wsUrl ?? (await CdpClient.discover(opts.port ?? 9222)).wsUrl;
     const cdp = await CdpClient.connect(wsUrl);
     const session = new BrowserSession(cdp);
     const targets = await session.tabs();
