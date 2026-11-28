@@ -4,10 +4,11 @@
 > Give AI agents production-operator-grade browser control — over *your* real browser, with *your* sessions, *your* fingerprint, and input that behaves like a human — through MCP.
 
 ![ci](https://github.com/theredhacker0345/redhand/actions/workflows/ci.yml/badge.svg)
-![release](https://img.shields.io/badge/release-v0.1.0-FF3B4E)
+![release](https://img.shields.io/badge/release-v0.2.0-FF3B4E)
+![npm](https://img.shields.io/npm/v/redhand-mcp?color=FF3B4E&label=npm)
 ![license](https://img.shields.io/badge/license-BSL_1.1--(Apache_2.0_after_2030)-8B93A5)
 
-**Status: v0.1.0 released.**
+**Status: v0.2.0 released — bridge shipped. Attach to your browser while it's already running.**
 
 **License: BSL 1.1** (free for personal use, security research, and bug bounty work — see [License](#license) for plain-English terms).
 
@@ -51,7 +52,7 @@ The engine implements operator patterns proven in production — element-index a
                                                   └──────────────────────────┘
 ```
 
-Three ways to connect (all v1):
+Three ways to connect:
 
 | Mode | How | Relaunch needed? |
 |---|---|---|
@@ -61,7 +62,7 @@ Three ways to connect (all v1):
 
 ---
 
-## Feature set (v1)
+## Feature set
 
 - **`browser_snapshot`** — indexed interactive elements: clickability heuristics, overlap pruning (nested dupes dropped), viewport filter, tag/role/text/aria/rect per element. JSON for code + compact text for LLM prompts.
 - **Actions, all with state-after** — every call returns the fresh snapshot diff + url/title. One round-trip per decide→act→see:
@@ -120,7 +121,7 @@ The security-research angle gets special treatment in the docs because it's wher
 |---|---|---|---|---|---|---|
 | Your real browser + sessions | ✅ | via extension | ✅ via extension | ✅ | 🟡 fresh/cloud | ❌ |
 | No extension required | ✅ (bridge optional) | ❌ | ❌ | ✅ | ✅ | ✅ |
-| Attach to running browser | ✅ (bridge, v1) | ✅ (extension) | ✅ | 🟡 | ❌ | ❌ |
+| Attach to running browser | ✅ (bridge — shipped in v0.2.0) | ✅ (extension) | ✅ | 🟡 | ❌ | ❌ |
 | Element-index precision API | ✅ core | 🟡 a11y refs | 🟡 basic | 🟡 | ✅ | ❌ |
 | State-after every action | ✅ | ❌ | ❌ | ❌ | 🟡 | ❌ |
 | Humanized mouse + typing | ✅ first-class dial | ❌ | ❌ | ❌ | ❌ | 🟡 mouse only |
@@ -197,7 +198,7 @@ redhand/
 └── examples/          # snapshot-click · form-fill · bounty-recon · live scout · benchmarks
 ```
 
-**v1:** everything above.
+**Shipped (v0.2.0):** everything above — including the bridge: attach to your running browser with zero relaunch (token-gated localhost relay, live-verified end-to-end).
 **Phase 2:** WebDriver BiDi adapter (Firefox/Safari — the protocol layer is adapter-ready by design), WebMCP site-tools passthrough, recording → replay, HAR export.
 **Maybe later:** Go/Rust rewrite of the daemon (the MCP contract hides the language; nothing locks in).
 
@@ -206,9 +207,18 @@ redhand/
 ## Security notes
 
 - The bridge extension holds only `debugger` + `storage` + `tabs`, and talks over a localhost WebSocket — no native messaging, no per-OS host registration, no cookies permission, no storage of page data.
-- Pairing token: the popup shows a token the local server must present — random local processes can't attach.
+- Pairing token: the server prints a random token at startup; the bridge can't connect without you pasting it into the popup. Random local processes can't attach.
 - Session visibility: badge + banner while a tab is attached; `stop()` kills control instantly.
 - While attached, the controlling agent can read the attached tab's DOM — same trust level as handing the agent the page yourself. Attach deliberately.
+
+---
+
+## What's new in v0.2.0
+
+- **The bridge is here.** The headline promise — *your browser, already running, zero relaunch* — is real: the `redhand-bridge` extension relays `chrome.debugger` over a token-gated localhost WebSocket to the redhand hub. Verified end-to-end on a live browser: pair → list tabs → attach → drive → detach.
+- **Instant MCP startup.** The server answers introspection with zero browser attached; the browser connects lazily on the first tool call. Clients that probe the server before the bridge pairs get clean, typed errors instead of hangs.
+- **Hardened relay.** Timeout-bounded pending-operation maps on every hop, typed error contracts (`NOT_ATTACHED` / `TAMPERING` / `VALIDATION`), and 11 dedicated relay tests covering attach, detach, error propagation, peer replacement, and garbage-frame resilience.
+- **`npm i -g redhand-mcp` / `npx redhand-mcp`** — now published.
 
 ---
 
