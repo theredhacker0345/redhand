@@ -6,6 +6,7 @@
 ![ci](https://github.com/theredhacker0345/redhand/actions/workflows/ci.yml/badge.svg)
 ![release](https://img.shields.io/badge/release-v0.2.0-FF3B4E)
 ![npm](https://img.shields.io/npm/v/redhand-mcp?color=FF3B4E&label=npm)
+[![theredhacker0345/redhand MCP server](https://glama.ai/mcp/servers/theredhacker0345/redhand/badges/score.svg)](https://glama.ai/mcp/servers/theredhacker0345/redhand)
 ![license](https://img.shields.io/badge/license-BSL_1.1--(Apache_2.0_after_2030)-8B93A5)
 
 **Status: v0.2.0 released — bridge shipped. Attach to your browser while it's already running.**
